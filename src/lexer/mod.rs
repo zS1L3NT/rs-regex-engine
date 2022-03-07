@@ -1,3 +1,4 @@
+mod __tests__;
 mod lexer;
 mod token;
 
