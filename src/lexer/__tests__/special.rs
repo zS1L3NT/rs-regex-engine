@@ -37,7 +37,7 @@ fn special_boundary() {
     valid!("/\\b/", vec![Special(Boundary(0))]);
     valid!("/\\\\b/", vec![Literal('\\', 0), Literal('b', 1)]);
     valid!("/B/", vec![Literal('B', 0)]);
-    valid!("/\\B/", vec![Special(Boundary(0))]);
+    valid!("/\\B/", vec![Special(NonBoundary(0))]);
     valid!("/\\\\B/", vec![Literal('\\', 0), Literal('B', 1)]);
 }
 
