@@ -43,16 +43,16 @@ macro_rules! invalid {
 fn regex_start() {
     valid!("/abc/", 3);
     valid!("/bcd/", 3);
-    invalid!("abc", "Expected RegExp to start with a </>");
-    invalid!("bcd", "Expected RegExp to start with a </>");
+    invalid!("/abc/", "Expected RegExp to start with a </>");
+    invalid!("/bcd/", "Expected RegExp to start with a </>");
 }
 
 #[test]
 fn regex_end() {
     valid!("/abc/", 3);
     valid!("/bcd/", 3);
-    invalid!("abc", "Expected RegExp to start with a </>");
-    invalid!("bcd", "Expected RegExp to start with a </>");
+    invalid!("/abc/", "Expected RegExp to start with a </>");
+    invalid!("/bcd/", "Expected RegExp to start with a </>");
 }
 
 #[test]
@@ -77,32 +77,32 @@ fn anchors() {
 
 #[test]
 fn quantifier_asterisk() {
-    invalid!("*", "The preceding token is not quantifiable");
+    invalid!("/*/", "The preceding token is not quantifiable");
     valid!("/a*/", vec![Literal('a', 0), Quantifier(Asterisk(1))]);
 }
 
 #[test]
 fn quantifier_plus() {
-    invalid!("+", "The preceding token is not quantifiable");
+    invalid!("/+/", "The preceding token is not quantifiable");
     valid!("/a+/", vec![Literal('a', 0), Quantifier(Plus(1))]);
 }
 
 #[test]
 fn quantifier_question_mark() {
-    invalid!("?", "The preceding token is not quantifiable");
+    invalid!("/?/", "The preceding token is not quantifiable");
     valid!("/a?/", vec![Literal('a', 0), Quantifier(QuestionMark(1))]);
 }
 
 #[test]
 fn quantifier_count() {
-    invalid!("{1}", "The preceding token is not quantifiable");
+    invalid!("/{1}/", "The preceding token is not quantifiable");
     valid!("/a{}/", 3);
     valid!("/a{1}/", vec![Literal('a', 0), Quantifier(Count(1, 1))]);
 }
 
 #[test]
 fn quantifier_range() {
-    invalid!("{1,2}", "The preceding token is not quantifiable");
+    invalid!("/{1,2}/", "The preceding token is not quantifiable");
     valid!("/a{,}/", 4);
     valid!(
         "/a{1,}/",
@@ -113,21 +113,21 @@ fn quantifier_range() {
         vec![Literal('a', 0), 0, Quantifier(Range(Some(1), Some(2), 1))]
     );
     valid!("/a{{1,}}/", 4);
-    valid!("/a(bc){1,}", 6);
+    valid!("/a(bc){1,}/", 6);
 }
 
 #[test]
 fn groups() {
-    invalid!("(", "Incomplete group structure");
-    invalid!(")", "Unmatched parenthesis");
-    invalid!("(?", "Incomplete group structure");
+    invalid!("/(/", "Incomplete group structure");
+    invalid!("/)/", "Unmatched parenthesis");
+    invalid!("/(?/", "Incomplete group structure");
 }
 
 #[test]
 fn group_capturing() {
-    valid!("()", vec![OpenGroup(Capturing(0)), CloseGroup(1)]);
+    valid!("/()/", vec![OpenGroup(Capturing(0)), CloseGroup(1)]);
     valid!(
-        "(abc)",
+        "/(abc)/",
         vec![
             OpenGroup(Capturing(0)),
             Literal('a', 1),
@@ -140,10 +140,10 @@ fn group_capturing() {
 
 #[test]
 fn group_non_capturing() {
-    invalid!("(?:", "Incomplete group structure");
-    valid!("(?:)", vec![OpenGroup(NonCapturing(0)), CloseGroup(1)]);
+    invalid!("/(?:/", "Incomplete group structure");
+    valid!("/(?:)/", vec![OpenGroup(NonCapturing(0)), CloseGroup(1)]);
     valid!(
-        "(:?)",
+        "/(:?)/",
         vec![
             OpenGroup(Capturing(0)),
             Literal(":", 1),
@@ -152,17 +152,20 @@ fn group_non_capturing() {
         ]
     );
     valid!(
-        "(?:x)",
+        "/(?:x)/",
         vec![OpenGroup(NonCapturing(0)), Literal('x', 3), CloseGroup(4)]
     );
 }
 
 #[test]
 fn group_positive_lookahead() {
-    invalid!("(?=", "Incomplete group structure");
-    valid!("(?=)", vec![OpenGroup(PositiveLookAhead(0)), CloseGroup(1)]);
+    invalid!("/(?=/", "Incomplete group structure");
     valid!(
-        "(=?)",
+        "/(?=)/",
+        vec![OpenGroup(PositiveLookAhead(0)), CloseGroup(1)]
+    );
+    valid!(
+        "/(=?)/",
         vec![
             OpenGroup(Capturing(0)),
             Literal("=", 1),
@@ -171,7 +174,7 @@ fn group_positive_lookahead() {
         ]
     );
     valid!(
-        "(?=x)",
+        "/(?=x)/",
         vec![
             OpenGroup(PositiveLookAhead(0)),
             Literal('x', 3),
@@ -182,14 +185,14 @@ fn group_positive_lookahead() {
 
 #[test]
 fn group_positive_lookbehind() {
-    invalid!("(?<", "Incomplete group structure");
-    invalid!("(?<=", "Incomplete group structure");
+    invalid!("/(?</", "Incomplete group structure");
+    invalid!("/(?<=/", "Incomplete group structure");
     valid!(
-        "(?<=)",
+        "/(?<=)/",
         vec![OpenGroup(PositiveLookBehind(0)), CloseGroup(1)]
     );
     valid!(
-        "(?<=x)",
+        "/(?<=x)/",
         vec![
             OpenGroup(PositiveLookBehind(0)),
             Literal('x', 4),
@@ -197,7 +200,7 @@ fn group_positive_lookbehind() {
         ]
     );
     valid!(
-        "(?=<x)",
+        "/(?=<x)/",
         vec![
             OpenGroup(PositiveLookAhead(0)),
             Literal('<', 3),
@@ -209,10 +212,13 @@ fn group_positive_lookbehind() {
 
 #[test]
 fn group_negative_lookahead() {
-    invalid!("(?!", "Incomplete group structure");
-    valid!("(?!)", vec![OpenGroup(PositiveLookAhead(0)), CloseGroup(1)]);
+    invalid!("/(?!/", "Incomplete group structure");
     valid!(
-        "(!?)",
+        "/(?!)/",
+        vec![OpenGroup(PositiveLookAhead(0)), CloseGroup(1)]
+    );
+    valid!(
+        "/(!?)/",
         vec![
             OpenGroup(Capturing(0)),
             Literal("!", 1),
@@ -221,7 +227,7 @@ fn group_negative_lookahead() {
         ]
     );
     valid!(
-        "(?!x)",
+        "/(?!x)/",
         vec![
             OpenGroup(PositiveLookAhead(0)),
             Literal('x', 3),
@@ -232,14 +238,14 @@ fn group_negative_lookahead() {
 
 #[test]
 fn group_negative_lookbehind() {
-    invalid!("(?<", "Incomplete group structure");
-    invalid!("(?<!", "Incomplete group structure");
+    invalid!("/(?</", "Incomplete group structure");
+    invalid!("/(?<!/", "Incomplete group structure");
     valid!(
-        "(?<!)",
+        "/(?<!)/",
         vec![OpenGroup(NegativeLookBehind(0)), CloseGroup(1)]
     );
     valid!(
-        "(?<!x)",
+        "/(?<!x)/",
         vec![
             OpenGroup(NegativeLookBehind(0)),
             Literal('x', 4),
@@ -247,7 +253,7 @@ fn group_negative_lookbehind() {
         ]
     );
     valid!(
-        "(?!<x)",
+        "/(?!<x)/",
         vec![
             OpenGroup(NegativeLookAhead(0)),
             Literal('<', 3),
@@ -259,10 +265,10 @@ fn group_negative_lookbehind() {
 
 #[test]
 fn brackets() {
-    invalid!("[", "Character class missing closing bracket");
-    valid!("[]", 2);
+    invalid!("/[/", "Character class missing closing bracket");
+    valid!("/[]/", 2);
     valid!(
-        "[a(bc)]",
+        "/[a(bc)]/",
         vec![
             OpenBracket(NonNegated(0)),
             Literal('a', 1),
@@ -277,10 +283,10 @@ fn brackets() {
 
 #[test]
 fn brackets_negation() {
-    invalid!("[^", "Character class missing closing bracket");
-    valid!("[^]", vec![OpenBracket(Negated(0)), CloseBracket(2)]);
+    invalid!("/[^/", "Character class missing closing bracket");
+    valid!("/[^]/", vec![OpenBracket(Negated(0)), CloseBracket(2)]);
     valid!(
-        "[^a(bc)]",
+        "/[^a(bc)]/",
         vec![
             OpenBracket(Negated(0)),
             Literal('a', 2),
