@@ -9,7 +9,7 @@ pub enum Token {
     AssertEnd(Pos),
     OpenGroup(OpenGroup),
     CloseGroup(Pos),
-    OpenBracket(bool, Pos),
+    OpenBracket(OpenBracket),
     CloseBracket(Pos),
     Pipe(Pos),
 }
@@ -22,6 +22,11 @@ pub enum OpenGroup {
     PositiveLookBehind(Pos),
     NegativeLookAhead(Pos),
     NegativeLookBehind(Pos),
+}
+
+pub enum OpenBracket {
+    NonNegated(Pos),
+    Negated(Pos),
 }
 
 #[derive(Debug, Clone, PartialEq)]
