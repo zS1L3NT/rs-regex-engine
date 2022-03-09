@@ -1,25 +1,34 @@
 type Pos = usize;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Token {
-    Literal(char, Pos, Option<Quantifier>),
-    Special(char, Pos, Option<Quantifier>),
+    Literal(char, Pos),
+    Special(char, Pos),
+    Quantifier(Quantifier),
     AssertStart(Pos),
     AssertEnd(Pos),
-    DisableCapture(Pos),
-    GroupName(String, Pos),
-    OpenGroup(Pos),
+    OpenGroup(OpenGroup),
     CloseGroup(Pos),
     OpenBracket(bool, Pos),
     CloseBracket(Pos),
-    LookAhead(bool, Pos),
-    LookBehind(bool, Pos),
+    Pipe(Pos),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
+pub enum OpenGroup {
+    Capturing(Pos),
+    NonCapturing(Pos),
+    PositiveLookAhead(Pos),
+    PositiveLookBehind(Pos),
+    NegativeLookAhead(Pos),
+    NegativeLookBehind(Pos),
+}
+
+#[derive(Debug, Clone, PartialEq)]
 pub enum Quantifier {
     Plus(Pos),
+    Asterisk(Pos),
     QuestionMark(Pos),
     Count(usize, Pos),
-    Range(usize, usize, Pos),
+    Range(Option<usize>, Option<usize>, Pos),
 }
