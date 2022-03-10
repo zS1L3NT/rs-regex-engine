@@ -1,22 +1,9 @@
-#[cfg(test)]
 mod anchors;
-
-#[cfg(test)]
 mod brackets;
-
-#[cfg(test)]
 mod escape;
-
-#[cfg(test)]
 mod group;
-
-#[cfg(test)]
 mod quantifiers;
-
-#[cfg(test)]
 mod regex;
-
-#[cfg(test)]
 mod special;
 
 pub use super::{
