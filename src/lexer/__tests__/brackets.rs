@@ -8,9 +8,9 @@ fn brackets() {
     valid!(
         "/[a(bc)]/",
         vec![
-            OpenBracket(NonNegated(0)),
+            OpenBracket(NonNegated, 0),
             Literal('a', 1),
-            OpenGroup(Capturing(2)),
+            OpenGroup(Capturing, 2),
             Literal('b', 3),
             Literal('c', 4),
             CloseGroup(5),
@@ -22,13 +22,13 @@ fn brackets() {
 #[test]
 fn brackets_negation() {
     invalid!("/[^/", "Character class missing closing bracket");
-    valid!("/[^]/", vec![OpenBracket(Negated(0)), CloseBracket(2)]);
+    valid!("/[^]/", vec![OpenBracket(Negated, 0), CloseBracket(2)]);
     valid!(
         "/[^a(bc)]/",
         vec![
-            OpenBracket(Negated(0)),
+            OpenBracket(Negated, 0),
             Literal('a', 2),
-            OpenGroup(Capturing(3)),
+            OpenGroup(Capturing, 3),
             Literal('b', 4),
             Literal('c', 5),
             CloseGroup(6),

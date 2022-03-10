@@ -3,53 +3,53 @@ type Pos = usize;
 #[derive(Debug, Clone, PartialEq)]
 pub enum Token {
     Literal(char, Pos),
-    Special(Special),
-    Quantifier(Quantifier),
+    Special(Special, Pos),
+    Quantifier(Quantifier, Pos),
     AssertStart(Pos),
     AssertEnd(Pos),
-    OpenGroup(OpenGroup),
+    OpenGroup(OpenGroup, Pos),
     CloseGroup(Pos),
-    OpenBracket(OpenBracket),
+    OpenBracket(OpenBracket, Pos),
     CloseBracket(Pos),
     Pipe(Pos),
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Special {
-    Whitespace(Pos),
-    NonWhitespace(Pos),
-    Word(Pos),
-    NonWord(Pos),
-    Digit(Pos),
-    NonDigit(Pos),
-    Boundary(Pos),
-    NonBoundary(Pos),
-    LineBreak(Pos),
-    CarriageReturn(Pos),
-    Tab(Pos),
+    Whitespace,
+    NonWhitespace,
+    Word,
+    NonWord,
+    Digit,
+    NonDigit,
+    Boundary,
+    NonBoundary,
+    LineBreak,
+    CarriageReturn,
+    Tab,
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Quantifier {
-    Plus(Pos),
-    Asterisk(Pos),
-    QuestionMark(Pos),
-    Count(usize, Pos),
-    Range(Option<usize>, Option<usize>, Pos),
+    Plus,
+    Asterisk,
+    QuestionMark,
+    Count(usize),
+    Range(Option<usize>, Option<usize>),
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum OpenGroup {
-    Capturing(Pos),
-    NonCapturing(Pos),
-    PositiveLookAhead(Pos),
-    PositiveLookBehind(Pos),
-    NegativeLookAhead(Pos),
-    NegativeLookBehind(Pos),
+    Capturing,
+    NonCapturing,
+    PositiveLookAhead,
+    PositiveLookBehind,
+    NegativeLookAhead,
+    NegativeLookBehind,
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum OpenBracket {
-    NonNegated(Pos),
-    Negated(Pos),
+    NonNegated,
+    Negated,
 }
