@@ -11,7 +11,6 @@ pub enum Token {
     CloseGroup(Pos),
     OpenBracket(OpenBracket),
     CloseBracket(Pos),
-    Pipe(Pos),
 }
 
 #[derive(Debug, Clone, PartialEq)]
