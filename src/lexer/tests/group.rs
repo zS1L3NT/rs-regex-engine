@@ -10,11 +10,11 @@ fn groups() {
 
 #[test]
 fn group_capturing() {
-    valid!("/()/", vec![OpenGroup(Capturing(0)), CloseGroup(1)]);
+    valid!("/()/", vec![OpenGroup(Capturing, 0), CloseGroup(1)]);
     valid!(
         "/(abc)/",
         vec![
-            OpenGroup(Capturing(0)),
+            OpenGroup(Capturing, 0),
             Literal('a', 1),
             Literal('b', 2),
             Literal('c', 3),
@@ -26,19 +26,19 @@ fn group_capturing() {
 #[test]
 fn group_non_capturing() {
     invalid!("/(?:/", "Incomplete group structure");
-    valid!("/(?:)/", vec![OpenGroup(NonCapturing(0)), CloseGroup(1)]);
+    valid!("/(?:)/", vec![OpenGroup(NonCapturing, 0), CloseGroup(3)]);
     valid!(
         "/(:?)/",
         vec![
-            OpenGroup(Capturing(0)),
+            OpenGroup(Capturing, 0),
             Literal(':', 1),
-            Quantifier(QuestionMark(2)),
+            Quantifier(QuestionMark, 2),
             CloseGroup(3)
         ]
     );
     valid!(
         "/(?:x)/",
-        vec![OpenGroup(NonCapturing(0)), Literal('x', 3), CloseGroup(4)]
+        vec![OpenGroup(NonCapturing, 0), Literal('x', 3), CloseGroup(4)]
     );
 }
 
@@ -47,21 +47,21 @@ fn group_positive_lookahead() {
     invalid!("/(?=/", "Incomplete group structure");
     valid!(
         "/(?=)/",
-        vec![OpenGroup(PositiveLookAhead(0)), CloseGroup(1)]
+        vec![OpenGroup(PositiveLookAhead, 0), CloseGroup(3)]
     );
     valid!(
         "/(=?)/",
         vec![
-            OpenGroup(Capturing(0)),
+            OpenGroup(Capturing, 0),
             Literal('=', 1),
-            Quantifier(QuestionMark(2)),
+            Quantifier(QuestionMark, 2),
             CloseGroup(3)
         ]
     );
     valid!(
         "/(?=x)/",
         vec![
-            OpenGroup(PositiveLookAhead(0)),
+            OpenGroup(PositiveLookAhead, 0),
             Literal('x', 3),
             CloseGroup(4)
         ]
@@ -74,12 +74,12 @@ fn group_positive_lookbehind() {
     invalid!("/(?<=/", "Incomplete group structure");
     valid!(
         "/(?<=)/",
-        vec![OpenGroup(PositiveLookBehind(0)), CloseGroup(1)]
+        vec![OpenGroup(PositiveLookBehind, 0), CloseGroup(4)]
     );
     valid!(
         "/(?<=x)/",
         vec![
-            OpenGroup(PositiveLookBehind(0)),
+            OpenGroup(PositiveLookBehind, 0),
             Literal('x', 4),
             CloseGroup(5)
         ]
@@ -87,7 +87,7 @@ fn group_positive_lookbehind() {
     valid!(
         "/(?=<x)/",
         vec![
-            OpenGroup(PositiveLookAhead(0)),
+            OpenGroup(PositiveLookAhead, 0),
             Literal('<', 3),
             Literal('x', 4),
             CloseGroup(5)
@@ -100,21 +100,21 @@ fn group_negative_lookahead() {
     invalid!("/(?!/", "Incomplete group structure");
     valid!(
         "/(?!)/",
-        vec![OpenGroup(PositiveLookAhead(0)), CloseGroup(1)]
+        vec![OpenGroup(PositiveLookAhead, 0), CloseGroup(3)]
     );
     valid!(
         "/(!?)/",
         vec![
-            OpenGroup(Capturing(0)),
+            OpenGroup(Capturing, 0),
             Literal('!', 1),
-            Quantifier(QuestionMark(2)),
+            Quantifier(QuestionMark, 2),
             CloseGroup(3)
         ]
     );
     valid!(
         "/(?!x)/",
         vec![
-            OpenGroup(PositiveLookAhead(0)),
+            OpenGroup(PositiveLookAhead, 0),
             Literal('x', 3),
             CloseGroup(4)
         ]
@@ -127,12 +127,12 @@ fn group_negative_lookbehind() {
     invalid!("/(?<!/", "Incomplete group structure");
     valid!(
         "/(?<!)/",
-        vec![OpenGroup(NegativeLookBehind(0)), CloseGroup(1)]
+        vec![OpenGroup(NegativeLookBehind, 0), CloseGroup(4)]
     );
     valid!(
         "/(?<!x)/",
         vec![
-            OpenGroup(NegativeLookBehind(0)),
+            OpenGroup(NegativeLookBehind, 0),
             Literal('x', 4),
             CloseGroup(5)
         ]
@@ -140,7 +140,7 @@ fn group_negative_lookbehind() {
     valid!(
         "/(?!<x)/",
         vec![
-            OpenGroup(NegativeLookAhead(0)),
+            OpenGroup(NegativeLookAhead, 0),
             Literal('<', 3),
             Literal('x', 4),
             CloseGroup(5)
