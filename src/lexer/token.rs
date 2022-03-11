@@ -1,12 +1,12 @@
-type Pos = usize;
+pub type Pos = usize;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Token {
     Literal(char, Pos),
     Special(Special, Pos),
     Quantifier(Quantifier, Pos),
-    AssertStart(Pos),
-    AssertEnd(Pos),
+    AnchorStart(Pos),
+    AnchorEnd(Pos),
     OpenGroup(OpenGroup, Pos),
     CloseGroup(Pos),
     OpenBracket(OpenBracket, Pos),
