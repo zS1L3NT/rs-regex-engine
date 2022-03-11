@@ -1,28 +1,49 @@
-use super::*;
-use crate::{invalid, valid};
+mod slashs {
+    use super::super::*;
+    use crate::invalid;
 
-#[test]
-fn regex_start() {
-    valid!("/abc/", 3);
-    valid!("/bcd/", 3);
-    invalid!("/abc/", "Expected RegExp to start with a </>");
-    invalid!("/bcd/", "Expected RegExp to start with a </>");
+    #[test]
+    fn invalid_start() {
+        invalid!("abc/", "Expected RegExp to start with a </>");
+    }
+
+    #[test]
+    fn invalid_end() {
+        invalid!("/abc", "Expected RegExp to end with a </>");
+    }
 }
 
-#[test]
-fn regex_end() {
-    valid!("/abc/", 3);
-    valid!("/bcd/", 3);
-    invalid!("/abc/", "Expected RegExp to start with a </>");
-    invalid!("/bcd/", "Expected RegExp to start with a </>");
-}
+mod length_check {
+    use super::super::*;
+    use crate::valid;
 
-#[test]
-fn length_check() {
-    valid!("//", 0);
-    valid!("/abc/", 3);
-    valid!("/^abc$/", 5);
-    valid!("/abc{2,5}/", 3);
-    valid!("/a(b|c)[^d]/", 9);
-    valid!("/\\ba\\b", 3);
+    #[test]
+    fn empty() {
+        valid!("//", 0);
+    }
+
+    #[test]
+    fn literals() {
+        valid!("/abc/", 3);
+    }
+
+    #[test]
+    fn anchors() {
+        valid!("/^abc$/", 5);
+    }
+
+    #[test]
+    fn range() {
+        valid!("/abc{2,5}/", 3);
+    }
+
+    #[test]
+    fn groups_and_brackets() {
+        valid!("/a(b|c)[^d]/", 9);
+    }
+
+    #[test]
+    fn escapes() {
+        valid!("/\\ba\\b", 3);
+    }
 }
