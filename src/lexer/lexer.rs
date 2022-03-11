@@ -1,13 +1,14 @@
 use crate::{
     lexer::{Pos, Token},
     Error,
-    Opsult::{self, Err as _Err, Some as _Some},
 };
 
 pub struct Lexer {
     chars: Vec<char>,
     tokens: Vec<Token>,
     pos: Pos,
+
+    bracket_depth: i32,
 }
 
 impl Lexer {
@@ -16,13 +17,14 @@ impl Lexer {
             chars: string.chars().collect(),
             tokens: vec![],
             pos: 0,
+            bracket_depth: 0,
         }
     }
 
-    pub fn lex(&mut self) -> Opsult<Vec<Token>, Error> {
+    pub fn lex(&mut self) -> Result<Vec<Token>, Error> {
         if let Some(first_char) = self.chars.get(0) {
             if *first_char != '/' {
-                return _Err(Error::new(
+                return Err(Error::new(
                     "Expected RegExp to start with a </>".to_string(),
                     0,
                 ));
@@ -31,7 +33,7 @@ impl Lexer {
 
         if let Some(last_char) = self.chars.last() {
             if *last_char != '/' {
-                return _Err(Error::new(
+                return Err(Error::new(
                     "Expected RegExp to end with a </>".to_string(),
                     self.chars.len() - 1,
                 ));
@@ -50,6 +52,18 @@ impl Lexer {
                 continue;
             }
 
+            if self.lex_groups() {
+                continue;
+            }
+
+            if self.lex_quantifier() {
+                continue;
+            }
+
+            if self.lex_special() {
+                continue;
+            }
+
             if let Some(char) = self.chars.first() {
                 self.tokens.push(Token::Literal(*char, self.pos));
                 self.chars.remove(0);
@@ -60,7 +74,7 @@ impl Lexer {
             }
         }
 
-        _Some(vec![])
+        Ok(self.tokens.clone())
     }
 
     fn lex_anchors(&mut self) -> bool {
@@ -72,7 +86,7 @@ impl Lexer {
                 true
             }
             Some('$') => {
-                let token = Token::AnchorEnd(self.pos);
+                self.tokens.push(Token::AnchorEnd(self.pos));
                 self.chars.remove(0);
                 self.pos += 1;
                 true
@@ -81,7 +95,19 @@ impl Lexer {
         }
     }
 
-    fn lex_brackets(&self) -> bool {
+    fn lex_brackets(&mut self) -> bool {
+        false
+    }
+
+    fn lex_groups(&mut self) -> bool {
+        false
+    }
+
+    fn lex_quantifier(&mut self) -> bool {
+        false
+    }
+
+    fn lex_special(&mut self) -> bool {
         false
     }
 }
