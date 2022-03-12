@@ -36,3 +36,16 @@ fn negated_with_literal() {
         vec![OpenBracket(Negated, 0), Literal('a', 2), CloseBracket(3)]
     );
 }
+
+#[test]
+fn literal_end() {
+    valid!("/]/", vec![Literal(']', 0)]);
+}
+
+#[test]
+fn empty_with_literal_end() {
+    valid!(
+        "/[]]/",
+        vec![OpenBracket(NonNegated, 0), CloseBracket(1), Literal(']', 2)]
+    );
+}

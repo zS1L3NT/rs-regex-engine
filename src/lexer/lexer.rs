@@ -1,7 +1,4 @@
-use crate::{
-    lexer::{Pos, Token},
-    Error,
-};
+use super::{super::Error, OpenBracket, Pos, Token};
 
 pub struct Lexer {
     chars: Vec<char>,
@@ -96,7 +93,35 @@ impl Lexer {
     }
 
     fn lex_brackets(&mut self) -> bool {
-        false
+        match self.chars.first() {
+            Some('[') => {
+                self.bracket_depth += 1;
+                if let Some('^') = self.chars.get(1) {
+                    self.tokens
+                        .push(Token::OpenBracket(OpenBracket::Negated, self.pos));
+                    self.chars.drain(0..2);
+                    self.pos += 2;
+                } else {
+                    self.tokens
+                        .push(Token::OpenBracket(OpenBracket::NonNegated, self.pos));
+                    self.chars.remove(0);
+                    self.pos += 1;
+                }
+                true
+            }
+            Some(']') => {
+                if self.bracket_depth == 0 {
+                    self.tokens.push(Token::Literal(']', self.pos));
+                } else {
+                    self.bracket_depth -= 1;
+                    self.tokens.push(Token::CloseBracket(self.pos));
+                }
+                self.chars.remove(0);
+                self.pos += 1;
+                true
+            }
+            _ => false,
+        }
     }
 
     fn lex_groups(&mut self) -> bool {
