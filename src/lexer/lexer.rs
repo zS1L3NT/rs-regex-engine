@@ -1,4 +1,4 @@
-use super::{super::Error, OpenBracket, OpenGroup, Pos, Quantifier, Token};
+use super::{super::Error, OpenBracket, OpenGroup, Pos, Quantifier, Special, Token};
 
 pub struct Lexer {
     chars: Vec<char>,
@@ -70,11 +70,7 @@ impl Lexer {
                 continue;
             }
 
-            if self.lex_special() {
-                continue;
-            }
-
-            match self.lex_escaped() {
+            match self.lex_special() {
                 Ok(result) => {
                     if result {
                         continue;
@@ -334,13 +330,82 @@ impl Lexer {
         }
     }
 
-    fn lex_special(&mut self) -> bool {
-        false
-    }
-
-    fn lex_escaped(&mut self) -> Result<bool, Error> {
+    fn lex_special(&mut self) -> Result<bool, Error> {
         if let Some('\\') = self.chars.first() {
             match self.chars.get(1) {
+                Some('s') => {
+                    self.tokens
+                        .push(Token::Special(Special::Whitespace, self.pos));
+                    self.chars.drain(0..2);
+                    self.pos += 2;
+                    Ok(true)
+                }
+                Some('S') => {
+                    self.tokens
+                        .push(Token::Special(Special::NonWhitespace, self.pos));
+                    self.chars.drain(0..2);
+                    self.pos += 2;
+                    Ok(true)
+                }
+                Some('d') => {
+                    self.tokens.push(Token::Special(Special::Digit, self.pos));
+                    self.chars.drain(0..2);
+                    self.pos += 2;
+                    Ok(true)
+                }
+                Some('D') => {
+                    self.tokens
+                        .push(Token::Special(Special::NonDigit, self.pos));
+                    self.chars.drain(0..2);
+                    self.pos += 2;
+                    Ok(true)
+                }
+                Some('w') => {
+                    self.tokens.push(Token::Special(Special::Word, self.pos));
+                    self.chars.drain(0..2);
+                    self.pos += 2;
+                    Ok(true)
+                }
+                Some('W') => {
+                    self.tokens.push(Token::Special(Special::NonWord, self.pos));
+                    self.chars.drain(0..2);
+                    self.pos += 2;
+                    Ok(true)
+                }
+                Some('b') => {
+                    self.tokens
+                        .push(Token::Special(Special::Boundary, self.pos));
+                    self.chars.drain(0..2);
+                    self.pos += 2;
+                    Ok(true)
+                }
+                Some('B') => {
+                    self.tokens
+                        .push(Token::Special(Special::NonBoundary, self.pos));
+                    self.chars.drain(0..2);
+                    self.pos += 2;
+                    Ok(true)
+                }
+                Some('n') => {
+                    self.tokens
+                        .push(Token::Special(Special::LineBreak, self.pos));
+                    self.chars.drain(0..2);
+                    self.pos += 2;
+                    Ok(true)
+                }
+                Some('t') => {
+                    self.tokens.push(Token::Special(Special::Tab, self.pos));
+                    self.chars.drain(0..2);
+                    self.pos += 2;
+                    Ok(true)
+                }
+                Some('r') => {
+                    self.tokens
+                        .push(Token::Special(Special::CarriageReturn, self.pos));
+                    self.chars.drain(0..2);
+                    self.pos += 2;
+                    Ok(true)
+                }
                 Some(char) => {
                     self.tokens.push(Token::Literal(*char, self.pos));
                     self.chars.drain(0..2);

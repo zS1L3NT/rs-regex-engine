@@ -14,7 +14,7 @@ mod whitespace {
 
     #[test]
     fn escaped() {
-        valid!("/\\\\s/", vec![Literal('\\', 0), Literal('s', 1)]);
+        valid!("/\\\\s/", vec![Literal('\\', 0), Literal('s', 2)]);
     }
 }
 
@@ -34,7 +34,7 @@ mod nonwhitespace {
 
     #[test]
     fn escaped() {
-        valid!("/\\\\S/", vec![Literal('\\', 0), Literal('S', 1)]);
+        valid!("/\\\\S/", vec![Literal('\\', 0), Literal('S', 2)]);
     }
 }
 
@@ -54,7 +54,7 @@ mod digit {
 
     #[test]
     fn escaped() {
-        valid!("/\\\\d/", vec![Literal('\\', 0), Literal('d', 1)]);
+        valid!("/\\\\d/", vec![Literal('\\', 0), Literal('d', 2)]);
     }
 }
 
@@ -74,7 +74,7 @@ mod nondigit {
 
     #[test]
     fn escaped() {
-        valid!("/\\\\D/", vec![Literal('\\', 0), Literal('D', 1)]);
+        valid!("/\\\\D/", vec![Literal('\\', 0), Literal('D', 2)]);
     }
 }
 
@@ -94,7 +94,7 @@ mod word {
 
     #[test]
     fn escaped() {
-        valid!("/\\\\w/", vec![Literal('\\', 0), Literal('w', 1)]);
+        valid!("/\\\\w/", vec![Literal('\\', 0), Literal('w', 2)]);
     }
 }
 
@@ -114,7 +114,7 @@ mod nonword {
 
     #[test]
     fn escaped() {
-        valid!("/\\\\W/", vec![Literal('\\', 0), Literal('W', 1)]);
+        valid!("/\\\\W/", vec![Literal('\\', 0), Literal('W', 2)]);
     }
 }
 
@@ -134,7 +134,7 @@ mod boundary {
 
     #[test]
     fn escaped() {
-        valid!("/\\\\b/", vec![Literal('\\', 0), Literal('b', 1)]);
+        valid!("/\\\\b/", vec![Literal('\\', 0), Literal('b', 2)]);
     }
 }
 
@@ -154,7 +154,7 @@ mod nonboundary {
 
     #[test]
     fn escaped() {
-        valid!("/\\\\B/", vec![Literal('\\', 0), Literal('B', 1)]);
+        valid!("/\\\\B/", vec![Literal('\\', 0), Literal('B', 2)]);
     }
 }
 
@@ -174,7 +174,7 @@ mod linebreak {
 
     #[test]
     fn escaped() {
-        valid!("/\\\\n/", vec![Literal('\\', 0), Literal('n', 1)]);
+        valid!("/\\\\n/", vec![Literal('\\', 0), Literal('n', 2)]);
     }
 }
 
@@ -194,7 +194,7 @@ mod carriagereturn {
 
     #[test]
     fn escaped() {
-        valid!("/\\\\r/", vec![Literal('\\', 0), Literal('r', 1)]);
+        valid!("/\\\\r/", vec![Literal('\\', 0), Literal('r', 2)]);
     }
 }
 
@@ -214,6 +214,6 @@ mod tab {
 
     #[test]
     fn escaped() {
-        valid!("/\\\\t/", vec![Literal('\\', 0), Literal('t', 1)]);
+        valid!("/\\\\t/", vec![Literal('\\', 0), Literal('t', 2)]);
     }
 }
