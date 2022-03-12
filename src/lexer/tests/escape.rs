@@ -1,5 +1,5 @@
 use super::*;
-use crate::valid;
+use crate::{invalid, valid};
 
 #[test]
 fn period() {
@@ -69,4 +69,9 @@ fn pipe() {
 #[test]
 fn backslash() {
     valid!("/\\\\/", vec![Literal('\\', 0)]);
+}
+
+#[test]
+fn invalid() {
+    invalid!("/\\/", "Pattern may not end with a trailing backslash");
 }

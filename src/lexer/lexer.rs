@@ -66,6 +66,15 @@ impl Lexer {
                 continue;
             }
 
+            match self.lex_escaped() {
+                Ok(result) => {
+                    if result {
+                        continue;
+                    }
+                }
+                Err(err) => return Err(err),
+            }
+
             if let Some(char) = self.chars.first() {
                 self.tokens.push(Token::Literal(*char, self.pos));
                 self.chars.remove(0);
@@ -146,5 +155,24 @@ impl Lexer {
 
     fn lex_special(&mut self) -> bool {
         false
+    }
+
+    fn lex_escaped(&mut self) -> Result<bool, Error> {
+        if let Some('\\') = self.chars.first() {
+            match self.chars.get(1) {
+                Some(char) => {
+                    self.tokens.push(Token::Literal(*char, self.pos));
+                    self.chars.drain(0..2);
+                    self.pos += 2;
+                    Ok(true)
+                }
+                None => Err(Error::new(
+                    "Pattern may not end with a trailing backslash".to_string(),
+                    self.pos,
+                )),
+            }
+        } else {
+            Ok(false)
+        }
     }
 }
