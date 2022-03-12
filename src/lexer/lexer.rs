@@ -45,8 +45,13 @@ impl Lexer {
                 continue;
             }
 
-            if self.lex_brackets() {
-                continue;
+            match self.lex_brackets() {
+                Ok(result) => {
+                    if result {
+                        continue;
+                    }
+                }
+                Err(err) => return Err(err),
             }
 
             if self.lex_groups() {
@@ -92,7 +97,7 @@ impl Lexer {
         }
     }
 
-    fn lex_brackets(&mut self) -> bool {
+    fn lex_brackets(&mut self) -> Result<bool, Error> {
         match self.chars.first() {
             Some('[') => {
                 self.bracket_depth += 1;
@@ -107,7 +112,14 @@ impl Lexer {
                     self.chars.remove(0);
                     self.pos += 1;
                 }
-                true
+                if self.chars.len() == 0 {
+                    Err(Error::new(
+                        "Character class missing closing bracket".to_string(),
+                        self.pos,
+                    ))
+                } else {
+                    Ok(true)
+                }
             }
             Some(']') => {
                 if self.bracket_depth == 0 {
@@ -118,9 +130,9 @@ impl Lexer {
                 }
                 self.chars.remove(0);
                 self.pos += 1;
-                true
+                Ok(true)
             }
-            _ => false,
+            _ => Ok(false),
         }
     }
 
