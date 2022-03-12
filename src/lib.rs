@@ -1,4 +1,5 @@
 mod error;
+mod lexer;
 mod opsult;
 mod regex;
 mod traits;
