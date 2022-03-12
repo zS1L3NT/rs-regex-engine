@@ -30,11 +30,11 @@ pub enum Special {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Quantifier {
-    Plus,
-    Asterisk,
-    QuestionMark,
+    OneOrMore,
+    ZeroOrMore,
+    ZeroOrOne,
     Count(usize),
-    Range(Option<usize>, Option<usize>),
+    Range(usize, Option<usize>),
 }
 
 #[derive(Debug, Clone, PartialEq)]

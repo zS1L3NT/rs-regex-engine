@@ -34,7 +34,7 @@ mod length_check {
 
     #[test]
     fn range() {
-        valid!("/abc{2,5}/", 3);
+        valid!("/abc{2,5}/", 4);
     }
 
     #[test]
@@ -44,6 +44,6 @@ mod length_check {
 
     #[test]
     fn escapes() {
-        valid!("/\\ba\\b", 3);
+        valid!("/\\ba\\b/", 3);
     }
 }

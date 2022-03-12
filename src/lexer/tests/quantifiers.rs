@@ -1,53 +1,36 @@
 mod asterisk {
     use super::super::*;
-    use crate::{invalid, valid};
+    use crate::valid;
 
     #[test]
-    fn invalid() {
-        invalid!("/*/", "The preceding token is not quantifiable");
-    }
-    #[test]
     fn with_literal() {
-        valid!("/a*/", vec![Literal('a', 0), Quantifier(Asterisk, 1)]);
+        valid!("/a*/", vec![Literal('a', 0), Quantifier(ZeroOrMore, 1)]);
     }
 }
 
 mod plus {
     use super::super::*;
-    use crate::{invalid, valid};
+    use crate::valid;
 
     #[test]
-    fn invalid() {
-        invalid!("/+/", "The preceding token is not quantifiable");
-    }
-    #[test]
     fn with_literal() {
-        valid!("/a+/", vec![Literal('a', 0), Quantifier(Plus, 1)]);
+        valid!("/a+/", vec![Literal('a', 0), Quantifier(OneOrMore, 1)]);
     }
 }
 
 mod question_mark {
     use super::super::*;
-    use crate::{invalid, valid};
+    use crate::valid;
 
     #[test]
-    fn invalid() {
-        invalid!("/?/", "The preceding token is not quantifiable");
-    }
-    #[test]
     fn with_literal() {
-        valid!("/a?/", vec![Literal('a', 0), Quantifier(QuestionMark, 1)]);
+        valid!("/a?/", vec![Literal('a', 0), Quantifier(ZeroOrOne, 1)]);
     }
 }
 
 mod count {
     use super::super::*;
-    use crate::{invalid, valid};
-
-    #[test]
-    fn invalid() {
-        invalid!("/{1}/", "The preceding token is not quantifiable");
-    }
+    use crate::valid;
 
     #[test]
     fn as_literals() {
@@ -62,12 +45,7 @@ mod count {
 
 mod range {
     use super::super::*;
-    use crate::{invalid, valid};
-
-    #[test]
-    fn invalid() {
-        invalid!("/{1,2}/", "The preceding token is not quantifiable");
-    }
+    use crate::valid;
 
     #[test]
     fn as_literals() {
@@ -75,26 +53,32 @@ mod range {
     }
 
     #[test]
-    fn only_start() {
+    fn to_unlimited() {
         valid!(
             "/a{1,}/",
-            vec![Literal('a', 0), Quantifier(Range(Some(1), None), 1)]
+            vec![Literal('a', 0), Quantifier(Range(1, None), 1)]
         );
     }
 
     #[test]
-    fn only_end() {
+    fn fake() {
         valid!(
-            "/a{,1}",
-            vec![Literal('a', 0), Quantifier(Range(None, Some(1)), 1)]
+            "/a{,1}/",
+            vec![
+                Literal('a', 0),
+                Literal('{', 1),
+                Literal(',', 2),
+                Literal('1', 3),
+                Literal('}', 4)
+            ]
         );
     }
 
     #[test]
-    fn both() {
+    fn full() {
         valid!(
             "/a{1,2}/",
-            vec![Literal('a', 0), Quantifier(Range(Some(1), Some(2)), 1)]
+            vec![Literal('a', 0), Quantifier(Range(1, Some(2)), 1)]
         );
     }
 

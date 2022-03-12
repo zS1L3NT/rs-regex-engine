@@ -1,4 +1,4 @@
-use super::{super::Error, OpenBracket, OpenGroup, Pos, Token};
+use super::{super::Error, OpenBracket, OpenGroup, Pos, Quantifier, Token};
 
 pub struct Lexer {
     chars: Vec<char>,
@@ -258,7 +258,80 @@ impl Lexer {
     }
 
     fn lex_quantifier(&mut self) -> bool {
-        false
+        match self.chars.first() {
+            Some('+') => {
+                self.tokens
+                    .push(Token::Quantifier(Quantifier::OneOrMore, self.pos));
+                self.chars.remove(0);
+                self.pos += 1;
+                true
+            }
+            Some('*') => {
+                self.tokens
+                    .push(Token::Quantifier(Quantifier::ZeroOrMore, self.pos));
+                self.chars.remove(0);
+                self.pos += 1;
+                true
+            }
+            Some('?') => {
+                self.tokens
+                    .push(Token::Quantifier(Quantifier::ZeroOrOne, self.pos));
+                self.chars.remove(0);
+                self.pos += 1;
+                true
+            }
+            Some('{') => {
+                let mut data = String::new();
+                for char in &self.chars[1..] {
+                    if char == &'}' {
+                        if data.len() == 0 {
+                            return false;
+                        } else if data.contains(',') {
+                            let mut ranges = data.split(',').into_iter();
+
+                            let start = if let Ok(start) = ranges.next().unwrap().parse::<usize>() {
+                                start
+                            } else {
+                                return false;
+                            };
+
+                            let end = if let Some(end) = ranges.next() {
+                                if let Ok(end) = end.parse::<usize>() {
+                                    Some(end)
+                                } else {
+                                    None
+                                }
+                            } else {
+                                None
+                            };
+
+                            self.tokens
+                                .push(Token::Quantifier(Quantifier::Range(start, end), self.pos))
+                        } else {
+                            self.tokens.push(Token::Quantifier(
+                                Quantifier::Count(data.parse().unwrap()),
+                                self.pos,
+                            ))
+                        }
+
+                        let forward = data.len() + 2;
+                        self.chars.drain(0..forward);
+                        self.pos += forward;
+                        return true;
+                    }
+
+                    if char.is_numeric() || (char == &',' && !data.contains(',')) {
+                        data.push(*char);
+                        continue;
+                    }
+
+                    return false;
+                }
+
+                false
+            }
+            _ => false,
+        }
     }
 
     fn lex_special(&mut self) -> bool {
