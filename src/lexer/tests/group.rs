@@ -134,7 +134,7 @@ mod positive_lookbehind {
     }
 
     #[test]
-    fn as_literals() {
+    fn with_literal() {
         valid!(
             "/(?<=x)/",
             vec![
@@ -146,7 +146,7 @@ mod positive_lookbehind {
     }
 
     #[test]
-    fn with_literal() {
+    fn as_literals() {
         valid!(
             "/(?=<x)/",
             vec![
@@ -172,7 +172,7 @@ mod negative_lookahead {
     fn empty() {
         valid!(
             "/(?!)/",
-            vec![OpenGroup(PositiveLookAhead, 0), CloseGroup(3)]
+            vec![OpenGroup(NegativeLookAhead, 0), CloseGroup(3)]
         );
     }
 
@@ -194,7 +194,7 @@ mod negative_lookahead {
         valid!(
             "/(?!x)/",
             vec![
-                OpenGroup(PositiveLookAhead, 0),
+                OpenGroup(NegativeLookAhead, 0),
                 Literal('x', 3),
                 CloseGroup(4)
             ]
@@ -221,7 +221,7 @@ mod negative_lookbehind {
     }
 
     #[test]
-    fn as_literals() {
+    fn with_literal() {
         valid!(
             "/(?<!x)/",
             vec![
@@ -232,7 +232,7 @@ mod negative_lookbehind {
         );
     }
     #[test]
-    fn with_literal() {
+    fn as_literals() {
         valid!(
             "/(?!<x)/",
             vec![

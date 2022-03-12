@@ -1,4 +1,4 @@
-use super::{super::Error, OpenBracket, Pos, Token};
+use super::{super::Error, OpenBracket, OpenGroup, Pos, Token};
 
 pub struct Lexer {
     chars: Vec<char>,
@@ -6,6 +6,7 @@ pub struct Lexer {
     pos: Pos,
 
     bracket_depth: i32,
+    group_depth: i32,
 }
 
 impl Lexer {
@@ -14,7 +15,9 @@ impl Lexer {
             chars: string.chars().collect(),
             tokens: vec![],
             pos: 0,
+
             bracket_depth: 0,
+            group_depth: 0,
         }
     }
 
@@ -54,8 +57,13 @@ impl Lexer {
                 Err(err) => return Err(err),
             }
 
-            if self.lex_groups() {
-                continue;
+            match self.lex_groups() {
+                Ok(result) => {
+                    if result {
+                        continue;
+                    }
+                }
+                Err(err) => return Err(err),
             }
 
             if self.lex_quantifier() {
@@ -145,8 +153,108 @@ impl Lexer {
         }
     }
 
-    fn lex_groups(&mut self) -> bool {
-        false
+    fn lex_groups(&mut self) -> Result<bool, Error> {
+        match self.chars.first() {
+            Some('(') => {
+                self.group_depth += 1;
+                let result = match self.chars.get(1) {
+                    Some('?') => match self.chars.get(2) {
+                        Some(':') => {
+                            self.tokens
+                                .push(Token::OpenGroup(OpenGroup::NonCapturing, self.pos));
+                            self.chars.drain(0..3);
+                            self.pos += 3;
+                            Ok(true)
+                        }
+                        Some('=') => {
+                            self.tokens
+                                .push(Token::OpenGroup(OpenGroup::PositiveLookAhead, self.pos));
+                            self.chars.drain(0..3);
+                            self.pos += 3;
+                            Ok(true)
+                        }
+                        Some('!') => {
+                            self.tokens
+                                .push(Token::OpenGroup(OpenGroup::NegativeLookAhead, self.pos));
+                            self.chars.drain(0..3);
+                            self.pos += 3;
+                            Ok(true)
+                        }
+                        Some('<') => match self.chars.get(3) {
+                            Some('=') => {
+                                self.tokens.push(Token::OpenGroup(
+                                    OpenGroup::PositiveLookBehind,
+                                    self.pos,
+                                ));
+                                self.chars.drain(0..4);
+                                self.pos += 4;
+                                Ok(true)
+                            }
+                            Some('!') => {
+                                self.tokens.push(Token::OpenGroup(
+                                    OpenGroup::NegativeLookBehind,
+                                    self.pos,
+                                ));
+                                self.chars.drain(0..4);
+                                self.pos += 4;
+                                Ok(true)
+                            }
+                            Some(_) => Err(Error::new(
+                                "The preceding token is not quantifiable".to_string(),
+                                self.pos,
+                            )),
+                            None => Err(Error::new(
+                                "Incomplete group structure".to_string(),
+                                self.pos,
+                            )),
+                        },
+                        Some(_) => Err(Error::new(
+                            "The preceding token is not quantifiable".to_string(),
+                            self.pos,
+                        )),
+                        None => Err(Error::new(
+                            "Incomplete group structure".to_string(),
+                            self.pos,
+                        )),
+                    },
+                    Some(_) => {
+                        self.tokens
+                            .push(Token::OpenGroup(OpenGroup::Capturing, self.pos));
+                        self.chars.remove(0);
+                        self.pos += 1;
+                        Ok(true)
+                    }
+                    None => Err(Error::new(
+                        "Incomplete group structure".to_string(),
+                        self.pos,
+                    )),
+                };
+
+                if let Ok(_) = result {
+                    if self.chars.len() == 0 {
+                        Err(Error::new(
+                            "Incomplete group structure".to_string(),
+                            self.pos,
+                        ))
+                    } else {
+                        result
+                    }
+                } else {
+                    result
+                }
+            }
+            Some(')') => {
+                if self.group_depth == 0 {
+                    return Err(Error::new("Unmatched parenthesis".to_string(), self.pos));
+                }
+                self.group_depth -= 1;
+                self.tokens.push(Token::CloseGroup(self.pos));
+                self.chars.remove(0);
+                self.pos += 1;
+                Ok(true)
+            }
+            _ => Ok(false),
+        }
     }
 
     fn lex_quantifier(&mut self) -> bool {
