@@ -1,39 +1,19 @@
 use std::fmt::Debug;
 
-trait Node: NodeClone + Debug {}
-
-trait NodeClone {
-    fn clone_box(&self) -> Box<dyn Node>;
+#[derive(Debug, Clone, PartialEq)]
+pub enum Node {
+    Single(Single),
+    Multi(Multi),
+    Group(Group),
 }
 
-impl<T: 'static + Node + Clone> NodeClone for T {
-    fn clone_box(&self) -> Box<dyn Node> {
-        Box::new(self.clone())
-    }
-}
-
-impl Clone for Box<dyn Node> {
-    fn clone(&self) -> Self {
-        self.clone_box()
-    }
-}
-
-#[derive(Debug, Clone)]
-pub enum Quantity {
-    OneOrMore,
-    ZeroOrMore,
-    ZeroOrOne,
-    Count(usize),
-    Range(usize, Option<usize>),
-}
-
-#[derive(Debug, Clone)]
-pub struct SingleNode {
+#[derive(Debug, Clone, PartialEq)]
+pub struct Single {
     value: SingleValue,
     quantity: Quantity,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum SingleValue {
     Char(char),
     Whitespace,
@@ -51,27 +31,44 @@ pub enum SingleValue {
     AnchorEnd,
 }
 
-#[derive(Debug, Clone)]
-pub struct MultiNode {
+impl Single {
+    pub fn new(value: SingleValue, quantity: Quantity) -> Self {
+        Self { value, quantity }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct Multi {
     variant: MultiVariant,
-    values: Vec<Box<dyn Node>>,
+    values: Vec<Node>,
     quantity: Quantity,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum MultiVariant {
     AND,
     OR,
     NAND,
 }
 
-#[derive(Debug, Clone)]
-pub struct GroupNode {
+impl Multi {
+    pub fn new(variant: MultiVariant, values: Vec<Node>, quantity: Quantity) -> Self {
+        Self {
+            variant,
+            values,
+            quantity,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct Group {
     variant: GroupVariant,
+    value: Box<Node>,
     quantity: Quantity,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum GroupVariant {
     Capturing,
     NonCapturing,
@@ -81,6 +78,21 @@ pub enum GroupVariant {
     NegativeLookBehind,
 }
 
-impl Node for SingleNode {}
-impl Node for MultiNode {}
-impl Node for GroupNode {}
+impl Group {
+    pub fn new(variant: GroupVariant, value: Box<Node>, quantity: Quantity) -> Self {
+        Self {
+            variant,
+            value,
+            quantity,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum Quantity {
+    OneOrMore,
+    ZeroOrMore,
+    ZeroOrOne,
+    Count(usize),
+    Range(usize, Option<usize>),
+}
