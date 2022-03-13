@@ -29,8 +29,26 @@ pub enum Quantity {
 
 #[derive(Debug, Clone)]
 pub struct SingleNode {
-    value: char,
+    value: SingleValue,
     quantity: Quantity,
+}
+
+#[derive(Debug, Clone)]
+pub enum SingleValue {
+    Char(char),
+    Whitespace,
+    NonWhitespace,
+    Word,
+    NonWord,
+    Digit,
+    NonDigit,
+    Boundary,
+    NonBoundary,
+    LineBreak,
+    CarriageReturn,
+    Tab,
+    AnchorStart,
+    AnchorEnd,
 }
 
 #[derive(Debug, Clone)]
