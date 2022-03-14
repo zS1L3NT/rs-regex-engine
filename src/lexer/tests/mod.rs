@@ -18,7 +18,7 @@ pub use super::{
 };
 
 #[macro_export]
-macro_rules! valid {
+macro_rules! lex_valid {
     ($a:literal, $count:literal) => {
         let count = if let Ok(tokens) = Lexer::new($a.to_string()).lex() {
             tokens.len()
@@ -40,7 +40,7 @@ macro_rules! valid {
 }
 
 #[macro_export]
-macro_rules! invalid {
+macro_rules! lex_invalid {
     ($a:literal, $msg:literal) => {
         let msg_starts_with = if let Err(err) = Lexer::new($a.to_string()).lex() {
             err.msg.starts_with($msg)

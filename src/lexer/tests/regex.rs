@@ -1,49 +1,49 @@
 mod slashs {
     use super::super::*;
-    use crate::invalid;
+    use crate::lex_invalid;
 
     #[test]
     fn invalid_start() {
-        invalid!("abc/", "Expected RegExp to start with a </>");
+        lex_invalid!("abc/", "Expected RegExp to start with a </>");
     }
 
     #[test]
     fn invalid_end() {
-        invalid!("/abc", "Expected RegExp to end with a </>");
+        lex_invalid!("/abc", "Expected RegExp to end with a </>");
     }
 }
 
 mod length_check {
     use super::super::*;
-    use crate::valid;
+    use crate::lex_valid;
 
     #[test]
     fn empty() {
-        valid!("//", 0);
+        lex_valid!("//", 0);
     }
 
     #[test]
     fn literals() {
-        valid!("/abc/", 3);
+        lex_valid!("/abc/", 3);
     }
 
     #[test]
     fn anchors() {
-        valid!("/^abc$/", 5);
+        lex_valid!("/^abc$/", 5);
     }
 
     #[test]
     fn range() {
-        valid!("/abc{2,5}/", 4);
+        lex_valid!("/abc{2,5}/", 4);
     }
 
     #[test]
     fn groups_and_brackets() {
-        valid!("/a(b|c)[^d]/", 9);
+        lex_valid!("/a(b|c)[^d]/", 9);
     }
 
     #[test]
     fn escapes() {
-        valid!("/\\ba\\b/", 3);
+        lex_valid!("/\\ba\\b/", 3);
     }
 }

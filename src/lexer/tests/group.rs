@@ -1,35 +1,35 @@
 mod invalid {
     use super::super::*;
-    use crate::invalid;
+    use crate::lex_invalid;
 
     #[test]
     fn start() {
-        invalid!("/(/", "Incomplete group structure");
+        lex_invalid!("/(/", "Incomplete group structure");
     }
 
     #[test]
     fn end() {
-        invalid!("/)/", "Unmatched parenthesis");
+        lex_invalid!("/)/", "Unmatched parenthesis");
     }
 
     #[test]
     fn start_with_question_mark() {
-        invalid!("/(?/", "Incomplete group structure");
+        lex_invalid!("/(?/", "Incomplete group structure");
     }
 }
 
 mod capturing {
     use super::super::*;
-    use crate::valid;
+    use crate::lex_valid;
 
     #[test]
     fn empty() {
-        valid!("/()/", vec![OpenGroup(Capturing, 0), CloseGroup(1)]);
+        lex_valid!("/()/", vec![OpenGroup(Capturing, 0), CloseGroup(1)]);
     }
 
     #[test]
     fn with_literal() {
-        valid!(
+        lex_valid!(
             "/(a)/",
             vec![OpenGroup(Capturing, 0), Literal('a', 1), CloseGroup(2)]
         );
@@ -38,21 +38,21 @@ mod capturing {
 
 mod non_capturing {
     use super::super::*;
-    use crate::{invalid, valid};
+    use crate::{lex_invalid, lex_valid};
 
     #[test]
     fn invalid() {
-        invalid!("/(?:/", "Incomplete group structure");
+        lex_invalid!("/(?:/", "Incomplete group structure");
     }
 
     #[test]
     fn empty() {
-        valid!("/(?:)/", vec![OpenGroup(NonCapturing, 0), CloseGroup(3)]);
+        lex_valid!("/(?:)/", vec![OpenGroup(NonCapturing, 0), CloseGroup(3)]);
     }
 
     #[test]
     fn as_literals() {
-        valid!(
+        lex_valid!(
             "/(:?)/",
             vec![
                 OpenGroup(Capturing, 0),
@@ -65,7 +65,7 @@ mod non_capturing {
 
     #[test]
     fn with_literal() {
-        valid!(
+        lex_valid!(
             "/(?:x)/",
             vec![OpenGroup(NonCapturing, 0), Literal('x', 3), CloseGroup(4)]
         );
@@ -74,16 +74,16 @@ mod non_capturing {
 
 mod positive_lookahead {
     use super::super::*;
-    use crate::{invalid, valid};
+    use crate::{lex_invalid, lex_valid};
 
     #[test]
     fn invalid() {
-        invalid!("/(?=/", "Incomplete group structure");
+        lex_invalid!("/(?=/", "Incomplete group structure");
     }
 
     #[test]
     fn empty() {
-        valid!(
+        lex_valid!(
             "/(?=)/",
             vec![OpenGroup(PositiveLookAhead, 0), CloseGroup(3)]
         );
@@ -91,7 +91,7 @@ mod positive_lookahead {
 
     #[test]
     fn as_literals() {
-        valid!(
+        lex_valid!(
             "/(=?)/",
             vec![
                 OpenGroup(Capturing, 0),
@@ -104,7 +104,7 @@ mod positive_lookahead {
 
     #[test]
     fn with_literal() {
-        valid!(
+        lex_valid!(
             "/(?=x)/",
             vec![
                 OpenGroup(PositiveLookAhead, 0),
@@ -117,17 +117,17 @@ mod positive_lookahead {
 
 mod positive_lookbehind {
     use super::super::*;
-    use crate::{invalid, valid};
+    use crate::{lex_invalid, lex_valid};
 
     #[test]
     fn invalid() {
-        invalid!("/(?</", "Incomplete group structure");
-        invalid!("/(?<=/", "Incomplete group structure");
+        lex_invalid!("/(?</", "Incomplete group structure");
+        lex_invalid!("/(?<=/", "Incomplete group structure");
     }
 
     #[test]
     fn empty() {
-        valid!(
+        lex_valid!(
             "/(?<=)/",
             vec![OpenGroup(PositiveLookBehind, 0), CloseGroup(4)]
         );
@@ -135,7 +135,7 @@ mod positive_lookbehind {
 
     #[test]
     fn with_literal() {
-        valid!(
+        lex_valid!(
             "/(?<=x)/",
             vec![
                 OpenGroup(PositiveLookBehind, 0),
@@ -147,7 +147,7 @@ mod positive_lookbehind {
 
     #[test]
     fn as_literals() {
-        valid!(
+        lex_valid!(
             "/(?=<x)/",
             vec![
                 OpenGroup(PositiveLookAhead, 0),
@@ -161,16 +161,16 @@ mod positive_lookbehind {
 
 mod negative_lookahead {
     use super::super::*;
-    use crate::{invalid, valid};
+    use crate::{lex_invalid, lex_valid};
 
     #[test]
     fn invalid() {
-        invalid!("/(?!/", "Incomplete group structure");
+        lex_invalid!("/(?!/", "Incomplete group structure");
     }
 
     #[test]
     fn empty() {
-        valid!(
+        lex_valid!(
             "/(?!)/",
             vec![OpenGroup(NegativeLookAhead, 0), CloseGroup(3)]
         );
@@ -178,7 +178,7 @@ mod negative_lookahead {
 
     #[test]
     fn as_literals() {
-        valid!(
+        lex_valid!(
             "/(!?)/",
             vec![
                 OpenGroup(Capturing, 0),
@@ -191,7 +191,7 @@ mod negative_lookahead {
 
     #[test]
     fn with_literal() {
-        valid!(
+        lex_valid!(
             "/(?!x)/",
             vec![
                 OpenGroup(NegativeLookAhead, 0),
@@ -204,17 +204,17 @@ mod negative_lookahead {
 
 mod negative_lookbehind {
     use super::super::*;
-    use crate::{invalid, valid};
+    use crate::{lex_invalid, lex_valid};
 
     #[test]
     fn invalid() {
-        invalid!("/(?</", "Incomplete group structure");
-        invalid!("/(?<!/", "Incomplete group structure");
+        lex_invalid!("/(?</", "Incomplete group structure");
+        lex_invalid!("/(?<!/", "Incomplete group structure");
     }
 
     #[test]
     fn empty() {
-        valid!(
+        lex_valid!(
             "/(?<!)/",
             vec![OpenGroup(NegativeLookBehind, 0), CloseGroup(4)]
         );
@@ -222,7 +222,7 @@ mod negative_lookbehind {
 
     #[test]
     fn with_literal() {
-        valid!(
+        lex_valid!(
             "/(?<!x)/",
             vec![
                 OpenGroup(NegativeLookBehind, 0),
@@ -233,7 +233,7 @@ mod negative_lookbehind {
     }
     #[test]
     fn as_literals() {
-        valid!(
+        lex_valid!(
             "/(?!<x)/",
             vec![
                 OpenGroup(NegativeLookAhead, 0),
