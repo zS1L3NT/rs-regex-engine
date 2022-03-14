@@ -3,89 +3,43 @@ use std::fmt::Debug;
 #[derive(Debug, Clone, PartialEq)]
 pub enum Node {
     Single(Single),
-    Multi(Multi),
-    Group(Group),
+    Multiple(Multiple),
+    Group(Box<Group>),
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct Single {
-    value: SingleValue,
-    quantity: Quantity,
+pub enum Single {
+    Char(char, Quantity),
+    Whitespace(Quantity),
+    NonWhitespace(Quantity),
+    Word(Quantity),
+    NonWord(Quantity),
+    Digit(Quantity),
+    NonDigit(Quantity),
+    Boundary(Quantity),
+    NonBoundary(Quantity),
+    LineBreak(Quantity),
+    CarriageReturn(Quantity),
+    Tab(Quantity),
+    AnchorStart(Quantity),
+    AnchorEnd(Quantity),
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub enum SingleValue {
-    Char(char),
-    Whitespace,
-    NonWhitespace,
-    Word,
-    NonWord,
-    Digit,
-    NonDigit,
-    Boundary,
-    NonBoundary,
-    LineBreak,
-    CarriageReturn,
-    Tab,
-    AnchorStart,
-    AnchorEnd,
-}
-
-impl Single {
-    pub fn new(value: SingleValue, quantity: Quantity) -> Self {
-        Self { value, quantity }
-    }
+pub enum Multiple {
+    AND(Vec<Node>, Quantity),
+    OR(Vec<Node>, Quantity),
+    NOR(Vec<Node>, Quantity),
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct Multi {
-    variant: MultiVariant,
-    values: Vec<Node>,
-    quantity: Quantity,
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub enum MultiVariant {
-    AND,
-    OR,
-    NAND,
-}
-
-impl Multi {
-    pub fn new(variant: MultiVariant, values: Vec<Node>, quantity: Quantity) -> Self {
-        Self {
-            variant,
-            values,
-            quantity,
-        }
-    }
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct Group {
-    variant: GroupVariant,
-    value: Box<Node>,
-    quantity: Quantity,
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub enum GroupVariant {
-    Capturing,
-    NonCapturing,
-    PositiveLookAhead,
-    PositiveLookBehind,
-    NegativeLookAhead,
-    NegativeLookBehind,
-}
-
-impl Group {
-    pub fn new(variant: GroupVariant, value: Box<Node>, quantity: Quantity) -> Self {
-        Self {
-            variant,
-            value,
-            quantity,
-        }
-    }
+pub enum Group {
+    Capturing(Node, Quantity),
+    NonCapturing(Node, Quantity),
+    PositiveLookAhead(Node, Quantity),
+    PositiveLookBehind(Node, Quantity),
+    NegativeLookAhead(Node, Quantity),
+    NegativeLookBehind(Node, Quantity),
 }
 
 #[derive(Debug, Clone, PartialEq)]
