@@ -9,37 +9,37 @@ pub enum Node {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Single {
-    Char(char, Quantity),
-    Whitespace(Quantity),
-    NonWhitespace(Quantity),
-    Word(Quantity),
-    NonWord(Quantity),
-    Digit(Quantity),
-    NonDigit(Quantity),
-    Boundary(Quantity),
-    NonBoundary(Quantity),
-    LineBreak(Quantity),
-    CarriageReturn(Quantity),
-    Tab(Quantity),
-    AnchorStart(Quantity),
-    AnchorEnd(Quantity),
+    Char(char, Option<Quantity>),
+    Whitespace(Option<Quantity>),
+    NonWhitespace(Option<Quantity>),
+    Word(Option<Quantity>),
+    NonWord(Option<Quantity>),
+    Digit(Option<Quantity>),
+    NonDigit(Option<Quantity>),
+    Boundary(Option<Quantity>),
+    NonBoundary(Option<Quantity>),
+    LineBreak(Option<Quantity>),
+    CarriageReturn(Option<Quantity>),
+    Tab(Option<Quantity>),
+    AnchorStart(Option<Quantity>),
+    AnchorEnd(Option<Quantity>),
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Multiple {
-    AND(Vec<Node>, Quantity),
-    OR(Vec<Node>, Quantity),
-    NOR(Vec<Node>, Quantity),
+    AND(Vec<Node>, Option<Quantity>),
+    OR(Vec<Node>, Option<Quantity>),
+    NOR(Vec<Node>, Option<Quantity>),
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Group {
-    Capturing(Node, Quantity),
-    NonCapturing(Node, Quantity),
-    PositiveLookAhead(Node, Quantity),
-    PositiveLookBehind(Node, Quantity),
-    NegativeLookAhead(Node, Quantity),
-    NegativeLookBehind(Node, Quantity),
+    Capturing(Node, Option<Quantity>),
+    NonCapturing(Node, Option<Quantity>),
+    PositiveLookAhead(Node, Option<Quantity>),
+    PositiveLookBehind(Node, Option<Quantity>),
+    NegativeLookAhead(Node, Option<Quantity>),
+    NegativeLookBehind(Node, Option<Quantity>),
 }
 
 #[derive(Debug, Clone, PartialEq)]
