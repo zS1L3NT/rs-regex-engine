@@ -1,60 +1,60 @@
 mod asterisk {
     use super::super::*;
-    use crate::valid;
+    use crate::lex_valid;
 
     #[test]
     fn with_literal() {
-        valid!("/a*/", vec![Literal('a', 0), Quantifier(ZeroOrMore, 1)]);
+        lex_valid!("/a*/", vec![Literal('a', 0), Quantifier(ZeroOrMore, 1)]);
     }
 }
 
 mod plus {
     use super::super::*;
-    use crate::valid;
+    use crate::lex_valid;
 
     #[test]
     fn with_literal() {
-        valid!("/a+/", vec![Literal('a', 0), Quantifier(OneOrMore, 1)]);
+        lex_valid!("/a+/", vec![Literal('a', 0), Quantifier(OneOrMore, 1)]);
     }
 }
 
 mod question_mark {
     use super::super::*;
-    use crate::valid;
+    use crate::lex_valid;
 
     #[test]
     fn with_literal() {
-        valid!("/a?/", vec![Literal('a', 0), Quantifier(ZeroOrOne, 1)]);
+        lex_valid!("/a?/", vec![Literal('a', 0), Quantifier(ZeroOrOne, 1)]);
     }
 }
 
 mod count {
     use super::super::*;
-    use crate::valid;
+    use crate::lex_valid;
 
     #[test]
     fn as_literals() {
-        valid!("/a{}/", 3);
+        lex_valid!("/a{}/", 3);
     }
 
     #[test]
     fn with_literal() {
-        valid!("/a{1}/", vec![Literal('a', 0), Quantifier(Count(1), 1)]);
+        lex_valid!("/a{1}/", vec![Literal('a', 0), Quantifier(Count(1), 1)]);
     }
 }
 
 mod range {
     use super::super::*;
-    use crate::valid;
+    use crate::lex_valid;
 
     #[test]
     fn as_literals() {
-        valid!("/a{,}/", 4);
+        lex_valid!("/a{,}/", 4);
     }
 
     #[test]
     fn to_unlimited() {
-        valid!(
+        lex_valid!(
             "/a{1,}/",
             vec![Literal('a', 0), Quantifier(Range(1, None), 1)]
         );
@@ -62,7 +62,7 @@ mod range {
 
     #[test]
     fn fake() {
-        valid!(
+        lex_valid!(
             "/a{,1}/",
             vec![
                 Literal('a', 0),
@@ -76,7 +76,7 @@ mod range {
 
     #[test]
     fn full() {
-        valid!(
+        lex_valid!(
             "/a{1,2}/",
             vec![Literal('a', 0), Quantifier(Range(1, Some(2)), 1)]
         );
@@ -84,6 +84,6 @@ mod range {
 
     #[test]
     fn nested_brackets() {
-        valid!("/a{{1,}}/", 4);
+        lex_valid!("/a{{1,}}/", 4);
     }
 }
