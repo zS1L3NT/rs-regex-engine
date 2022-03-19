@@ -1,8 +1,8 @@
-mod anchors;
-mod brackets;
+mod anchor;
+mod bracket;
 mod escape;
 mod group;
-mod quantifiers;
+mod quantifier;
 mod regex;
 mod special;
 
