@@ -10,7 +10,7 @@ pub use super::{
     token::{
         OpenBracket::{self, *},
         OpenGroup::{self, *},
-        Quantifier::{self, *},
+        Quantity::{self, *},
         Special::{self, *},
         Token::{self, *},
     },

@@ -57,7 +57,7 @@ mod non_capturing {
             vec![
                 OpenGroup(Capturing, 0),
                 Literal(':', 1),
-                Quantifier(ZeroOrOne, 2),
+                Quantity(ZeroOrOne, 2),
                 CloseGroup(3)
             ]
         );
@@ -96,7 +96,7 @@ mod positive_lookahead {
             vec![
                 OpenGroup(Capturing, 0),
                 Literal('=', 1),
-                Quantifier(ZeroOrOne, 2),
+                Quantity(ZeroOrOne, 2),
                 CloseGroup(3)
             ]
         );
@@ -183,7 +183,7 @@ mod negative_lookahead {
             vec![
                 OpenGroup(Capturing, 0),
                 Literal('!', 1),
-                Quantifier(ZeroOrOne, 2),
+                Quantity(ZeroOrOne, 2),
                 CloseGroup(3)
             ]
         );
