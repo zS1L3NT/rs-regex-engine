@@ -4,7 +4,7 @@ mod asterisk {
 
     #[test]
     fn with_literal() {
-        lex_valid!("/a*/", vec![Literal('a', 0), Quantifier(ZeroOrMore, 1)]);
+        lex_valid!("/a*/", vec![Literal('a', 0), Quantity(ZeroOrMore, 1)]);
     }
 }
 
@@ -14,7 +14,7 @@ mod plus {
 
     #[test]
     fn with_literal() {
-        lex_valid!("/a+/", vec![Literal('a', 0), Quantifier(OneOrMore, 1)]);
+        lex_valid!("/a+/", vec![Literal('a', 0), Quantity(OneOrMore, 1)]);
     }
 }
 
@@ -24,7 +24,7 @@ mod question_mark {
 
     #[test]
     fn with_literal() {
-        lex_valid!("/a?/", vec![Literal('a', 0), Quantifier(ZeroOrOne, 1)]);
+        lex_valid!("/a?/", vec![Literal('a', 0), Quantity(ZeroOrOne, 1)]);
     }
 }
 
@@ -39,7 +39,7 @@ mod count {
 
     #[test]
     fn with_literal() {
-        lex_valid!("/a{1}/", vec![Literal('a', 0), Quantifier(Count(1), 1)]);
+        lex_valid!("/a{1}/", vec![Literal('a', 0), Quantity(Count(1), 1)]);
     }
 }
 
@@ -56,7 +56,7 @@ mod range {
     fn to_unlimited() {
         lex_valid!(
             "/a{1,}/",
-            vec![Literal('a', 0), Quantifier(Range(1, None), 1)]
+            vec![Literal('a', 0), Quantity(Range(1, None), 1)]
         );
     }
 
@@ -78,7 +78,7 @@ mod range {
     fn full() {
         lex_valid!(
             "/a{1,2}/",
-            vec![Literal('a', 0), Quantifier(Range(1, Some(2)), 1)]
+            vec![Literal('a', 0), Quantity(Range(1, Some(2)), 1)]
         );
     }
 

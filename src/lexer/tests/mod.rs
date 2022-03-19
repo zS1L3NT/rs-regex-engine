@@ -1,8 +1,8 @@
-mod anchors;
-mod brackets;
+mod anchor;
+mod bracket;
 mod escape;
 mod group;
-mod quantifiers;
+mod quantifier;
 mod regex;
 mod special;
 
@@ -10,7 +10,7 @@ pub use super::{
     token::{
         OpenBracket::{self, *},
         OpenGroup::{self, *},
-        Quantifier::{self, *},
+        Quantity::{self, *},
         Special::{self, *},
         Token::{self, *},
     },
