@@ -1,4 +1,7 @@
-use super::{super::lexer::Token, super::Opsult, *};
+use super::{
+    super::{lexer::Token, Error, Opsult},
+    *,
+};
 
 pub struct Parser {
     tokens: Vec<Token>,
@@ -67,7 +70,7 @@ impl Parser {
         Self { tokens }
     }
 
-    pub fn parse(&mut self) -> Opsult<Node, String> {
+    pub fn parse(&mut self) -> Opsult<Node, Error> {
         if self.tokens.len() == 0 {
             return Opsult::None;
         }
@@ -89,7 +92,7 @@ impl Parser {
         }
     }
 
-    fn parse_node(&mut self) -> Opsult<Node, String> {
+    fn parse_node(&mut self) -> Opsult<Node, Error> {
         if let Some(token) = self.tokens.first() {
             Opsult::Some(match token.to_owned() {
                 Token::Literal(char, pos) => {
@@ -151,11 +154,17 @@ impl Parser {
                             nodes.push(node);
                             continue;
                         }
-                        return Opsult::Err(format!("Could not parse node at token {:?}", token));
+                        return Opsult::Err(Error::new(
+                            format!("Could not parse node at token {:?}", token),
+                            pos,
+                        ));
                     }
 
                     if !closed {
-                        return Opsult::Err("Did not find end of group".to_string());
+                        return Opsult::Err(Error::new(
+                            "Did not find end of group".to_string(),
+                            pos,
+                        ));
                     } else {
                         Node::Group(Box::new(convert_group(
                             opengroup,
@@ -190,11 +199,17 @@ impl Parser {
                             nodes.push(node);
                             continue;
                         }
-                        return Opsult::Err(format!("Could not parse node at token {:?}", token));
+                        return Opsult::Err(Error::new(
+                            format!("Could not parse node at token {:?}", token),
+                            pos,
+                        ));
                     }
 
                     if !closed {
-                        return Opsult::Err("Did not find end of bracket".to_string());
+                        return Opsult::Err(Error::new(
+                            "Did not find end of bracket".to_string(),
+                            pos,
+                        ));
                     } else {
                         Node::Multiple(convert_bracket(
                             openbracket,
@@ -210,7 +225,7 @@ impl Parser {
                         ))
                     }
                 }
-                _ => return Opsult::Err("".to_string()),
+                _ => return Opsult::Err(Error::new("How can this be???".to_string(), 0)),
             })
         } else {
             Opsult::None
