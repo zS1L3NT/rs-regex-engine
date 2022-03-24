@@ -70,9 +70,9 @@ impl Parser {
         Self { tokens }
     }
 
-    pub fn parse(&mut self) -> Opsult<Node, Error> {
+    pub fn parse(&mut self) -> Result<Node, Error> {
         if self.tokens.len() == 0 {
-            return Opsult::None;
+            return Ok(Node::Empty);
         }
 
         let mut nodes = Vec::new();
@@ -80,15 +80,15 @@ impl Parser {
         while self.tokens.len() > 0 {
             match self.parse_node() {
                 Opsult::Some(node) => nodes.push(node),
-                Opsult::Err(err) => return Opsult::Err(err),
+                Opsult::Err(err) => return Err(err),
                 Opsult::None => break,
             }
         }
 
         match nodes.len() {
-            0 => Opsult::None,
-            1 => Opsult::Some(nodes.first().unwrap().to_owned()),
-            _ => Opsult::Some(Node::Multiple(Multiple::AND(nodes))),
+            0 => Ok(Node::Empty),
+            1 => Ok(nodes.first().unwrap().to_owned()),
+            _ => Ok(Node::Multiple(Multiple::AND(nodes))),
         }
     }
 
