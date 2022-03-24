@@ -18,5 +18,5 @@ fn both() {
 
 #[test]
 fn both_with_literal() {
-    lex_valid!("/^a$/", vec![AnchorStart(0), Literal('a', 1), AnchorEnd(2)]);
+    lex_valid!("/^a$/", vec![AnchorStart(1), Literal('a', 2), AnchorEnd(3)]);
 }

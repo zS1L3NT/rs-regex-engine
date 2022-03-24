@@ -24,14 +24,14 @@ mod capturing {
 
     #[test]
     fn empty() {
-        lex_valid!("/()/", vec![OpenGroup(Capturing, 0), CloseGroup(1)]);
+        lex_valid!("/()/", vec![OpenGroup(Capturing, 1), CloseGroup]);
     }
 
     #[test]
     fn with_literal() {
         lex_valid!(
             "/(a)/",
-            vec![OpenGroup(Capturing, 0), Literal('a', 1), CloseGroup(2)]
+            vec![OpenGroup(Capturing, 1), Literal('a', 2), CloseGroup]
         );
     }
 }
@@ -47,7 +47,7 @@ mod non_capturing {
 
     #[test]
     fn empty() {
-        lex_valid!("/(?:)/", vec![OpenGroup(NonCapturing, 0), CloseGroup(3)]);
+        lex_valid!("/(?:)/", vec![OpenGroup(NonCapturing, 1), CloseGroup]);
     }
 
     #[test]
@@ -55,10 +55,10 @@ mod non_capturing {
         lex_valid!(
             "/(:?)/",
             vec![
-                OpenGroup(Capturing, 0),
-                Literal(':', 1),
-                Quantity(ZeroOrOne, 2),
-                CloseGroup(3)
+                OpenGroup(Capturing, 1),
+                Literal(':', 2),
+                Quantity(ZeroOrOne, 3),
+                CloseGroup
             ]
         );
     }
@@ -67,7 +67,7 @@ mod non_capturing {
     fn with_literal() {
         lex_valid!(
             "/(?:x)/",
-            vec![OpenGroup(NonCapturing, 0), Literal('x', 3), CloseGroup(4)]
+            vec![OpenGroup(NonCapturing, 1), Literal('x', 4), CloseGroup]
         );
     }
 }
@@ -85,7 +85,7 @@ mod positive_lookahead {
     fn empty() {
         lex_valid!(
             "/(?=)/",
-            vec![OpenGroup(PositiveLookAhead, 0), CloseGroup(3)]
+            vec![OpenGroup(PositiveLookAhead, 1), CloseGroup]
         );
     }
 
@@ -94,10 +94,10 @@ mod positive_lookahead {
         lex_valid!(
             "/(=?)/",
             vec![
-                OpenGroup(Capturing, 0),
-                Literal('=', 1),
-                Quantity(ZeroOrOne, 2),
-                CloseGroup(3)
+                OpenGroup(Capturing, 1),
+                Literal('=', 2),
+                Quantity(ZeroOrOne, 3),
+                CloseGroup
             ]
         );
     }
@@ -107,9 +107,9 @@ mod positive_lookahead {
         lex_valid!(
             "/(?=x)/",
             vec![
-                OpenGroup(PositiveLookAhead, 0),
-                Literal('x', 3),
-                CloseGroup(4)
+                OpenGroup(PositiveLookAhead, 1),
+                Literal('x', 4),
+                CloseGroup
             ]
         );
     }
@@ -129,7 +129,7 @@ mod positive_lookbehind {
     fn empty() {
         lex_valid!(
             "/(?<=)/",
-            vec![OpenGroup(PositiveLookBehind, 0), CloseGroup(4)]
+            vec![OpenGroup(PositiveLookBehind, 1), CloseGroup]
         );
     }
 
@@ -138,9 +138,9 @@ mod positive_lookbehind {
         lex_valid!(
             "/(?<=x)/",
             vec![
-                OpenGroup(PositiveLookBehind, 0),
-                Literal('x', 4),
-                CloseGroup(5)
+                OpenGroup(PositiveLookBehind, 1),
+                Literal('x', 5),
+                CloseGroup
             ]
         );
     }
@@ -150,10 +150,10 @@ mod positive_lookbehind {
         lex_valid!(
             "/(?=<x)/",
             vec![
-                OpenGroup(PositiveLookAhead, 0),
-                Literal('<', 3),
-                Literal('x', 4),
-                CloseGroup(5)
+                OpenGroup(PositiveLookAhead, 1),
+                Literal('<', 4),
+                Literal('x', 5),
+                CloseGroup
             ]
         );
     }
@@ -172,7 +172,7 @@ mod negative_lookahead {
     fn empty() {
         lex_valid!(
             "/(?!)/",
-            vec![OpenGroup(NegativeLookAhead, 0), CloseGroup(3)]
+            vec![OpenGroup(NegativeLookAhead, 1), CloseGroup]
         );
     }
 
@@ -181,10 +181,10 @@ mod negative_lookahead {
         lex_valid!(
             "/(!?)/",
             vec![
-                OpenGroup(Capturing, 0),
-                Literal('!', 1),
-                Quantity(ZeroOrOne, 2),
-                CloseGroup(3)
+                OpenGroup(Capturing, 1),
+                Literal('!', 2),
+                Quantity(ZeroOrOne, 3),
+                CloseGroup
             ]
         );
     }
@@ -194,9 +194,9 @@ mod negative_lookahead {
         lex_valid!(
             "/(?!x)/",
             vec![
-                OpenGroup(NegativeLookAhead, 0),
-                Literal('x', 3),
-                CloseGroup(4)
+                OpenGroup(NegativeLookAhead, 1),
+                Literal('x', 4),
+                CloseGroup
             ]
         );
     }
@@ -216,7 +216,7 @@ mod negative_lookbehind {
     fn empty() {
         lex_valid!(
             "/(?<!)/",
-            vec![OpenGroup(NegativeLookBehind, 0), CloseGroup(4)]
+            vec![OpenGroup(NegativeLookBehind, 1), CloseGroup]
         );
     }
 
@@ -225,9 +225,9 @@ mod negative_lookbehind {
         lex_valid!(
             "/(?<!x)/",
             vec![
-                OpenGroup(NegativeLookBehind, 0),
-                Literal('x', 4),
-                CloseGroup(5)
+                OpenGroup(NegativeLookBehind, 1),
+                Literal('x', 5),
+                CloseGroup
             ]
         );
     }
@@ -236,10 +236,10 @@ mod negative_lookbehind {
         lex_valid!(
             "/(?!<x)/",
             vec![
-                OpenGroup(NegativeLookAhead, 0),
-                Literal('<', 3),
-                Literal('x', 4),
-                CloseGroup(5)
+                OpenGroup(NegativeLookAhead, 1),
+                Literal('<', 4),
+                Literal('x', 5),
+                CloseGroup
             ]
         );
     }

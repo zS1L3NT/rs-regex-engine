@@ -15,7 +15,7 @@ fn nonnegated_empty() {
 fn nonnegated_with_literal() {
     lex_valid!(
         "/[a]/",
-        vec![OpenBracket(NonNegated, 0), Literal('a', 1), CloseBracket(2)]
+        vec![OpenBracket(NonNegated, 1), Literal('a', 2), CloseBracket]
     );
 }
 
@@ -26,26 +26,26 @@ fn negated_invalid() {
 
 #[test]
 fn negated_empty() {
-    lex_valid!("/[^]/", vec![OpenBracket(Negated, 0), CloseBracket(2)]);
+    lex_valid!("/[^]/", vec![OpenBracket(Negated, 1), CloseBracket]);
 }
 
 #[test]
 fn negated_with_literal() {
     lex_valid!(
         "/[^a]/",
-        vec![OpenBracket(Negated, 0), Literal('a', 2), CloseBracket(3)]
+        vec![OpenBracket(Negated, 1), Literal('a', 3), CloseBracket]
     );
 }
 
 #[test]
 fn literal_end() {
-    lex_valid!("/]/", vec![Literal(']', 0)]);
+    lex_valid!("/]/", vec![Literal(']', 1)]);
 }
 
 #[test]
 fn empty_with_literal_end() {
     lex_valid!(
         "/[]]/",
-        vec![OpenBracket(NonNegated, 0), CloseBracket(1), Literal(']', 2)]
+        vec![OpenBracket(NonNegated, 1), CloseBracket, Literal(']', 3)]
     );
 }

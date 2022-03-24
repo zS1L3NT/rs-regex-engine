@@ -14,7 +14,7 @@ impl Lexer {
         Self {
             chars: string.chars().collect(),
             tokens: vec![],
-            pos: 0,
+            pos: 1,
 
             bracket_depth: 0,
             group_depth: 0,
@@ -139,7 +139,7 @@ impl Lexer {
                     self.tokens.push(Token::Literal(']', self.pos));
                 } else {
                     self.bracket_depth -= 1;
-                    self.tokens.push(Token::CloseBracket(self.pos));
+                    self.tokens.push(Token::CloseBracket);
                 }
                 self.chars.remove(0);
                 self.pos += 1;
@@ -244,7 +244,7 @@ impl Lexer {
                     return Err(Error::new("Unmatched parenthesis".to_string(), self.pos));
                 }
                 self.group_depth -= 1;
-                self.tokens.push(Token::CloseGroup(self.pos));
+                self.tokens.push(Token::CloseGroup);
                 self.chars.remove(0);
                 self.pos += 1;
                 Ok(true)
