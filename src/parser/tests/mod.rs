@@ -25,7 +25,7 @@ macro_rules! parse_valid {
             value
         } else {
             println!("Value was not Some, {:?}", node);
-            Single(Char('_', ZeroOrOne))
+            Single(Char('_', One, 0))
         };
         assert_eq!(value, $node);
     }};

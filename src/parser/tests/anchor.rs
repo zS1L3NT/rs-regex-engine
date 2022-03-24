@@ -3,12 +3,12 @@ use crate::parse_valid;
 
 #[test]
 fn start() {
-    parse_valid!("/^/", Single(AnchorStart(One)));
+    parse_valid!("/^/", Single(AnchorStart(One, 1)));
 }
 
 #[test]
 fn end() {
-    parse_valid!("/$/", Single(AnchorEnd(One)));
+    parse_valid!("/$/", Single(AnchorEnd(One, 1)));
 }
 
 #[test]
@@ -16,8 +16,8 @@ fn both() {
     parse_valid!(
         "/^$/",
         Multiple(AND(vec![
-            Single(AnchorStart(One)),
-            Single(AnchorEnd(One))
+            Single(AnchorStart(One, 1)),
+            Single(AnchorEnd(One, 2))
         ]))
     );
 }
@@ -27,9 +27,9 @@ fn both_with_literal() {
     parse_valid!(
         "/^a$/",
         Multiple(AND(vec![
-            Single(AnchorStart(One)),
-            Single(Char('a', One)),
-            Single(AnchorEnd(One)),
+            Single(AnchorStart(One, 1)),
+            Single(Char('a', One, 2)),
+            Single(AnchorEnd(One, 3)),
         ]))
     );
 }
