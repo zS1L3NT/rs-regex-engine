@@ -21,7 +21,7 @@ macro_rules! parse_valid {
     ($a:literal, $node:expr) => {{
         let tokens = Lexer::new($a.to_string()).lex().unwrap();
         let node = Parser::new(tokens).parse();
-        let value = if let Opsult::Some(value) = node {
+        let value = if let Ok(value) = node {
             value
         } else {
             println!("Value was not Some, {:?}", node);
