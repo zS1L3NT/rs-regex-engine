@@ -4,13 +4,13 @@ pub struct Parser {
     tokens: Vec<Token>,
 }
 
-fn convert_quantity(quantity: &crate::lexer::Quantity) -> Quantity {
+fn convert_quantity(quantity: &crate::lexer::Quantity, pos: Pos) -> Quantity {
     match quantity {
-        crate::lexer::Quantity::ZeroOrOne => Quantity::ZeroOrOne,
-        crate::lexer::Quantity::ZeroOrMore => Quantity::ZeroOrMore,
-        crate::lexer::Quantity::OneOrMore => Quantity::OneOrMore,
-        crate::lexer::Quantity::Count(count) => Quantity::Count(*count),
-        crate::lexer::Quantity::Range(start, end) => Quantity::Range(*start, *end),
+        crate::lexer::Quantity::ZeroOrOne => Quantity::ZeroOrOne(pos),
+        crate::lexer::Quantity::ZeroOrMore => Quantity::ZeroOrMore(pos),
+        crate::lexer::Quantity::OneOrMore => Quantity::OneOrMore(pos),
+        crate::lexer::Quantity::Count(count) => Quantity::Count(*count, pos),
+        crate::lexer::Quantity::Range(start, end) => Quantity::Range(*start, *end, pos),
     }
 }
 
@@ -30,14 +30,23 @@ fn convert_special(special: crate::lexer::Special) -> Special {
     }
 }
 
-fn convert_group(group: crate::lexer::OpenGroup, node: Node, quantity: Quantity) -> Group {
+fn convert_group(
+    group: crate::lexer::OpenGroup,
+    node: Node,
+    quantity: Quantity,
+    pos: Pos,
+) -> Group {
     match group {
-        crate::lexer::OpenGroup::Capturing => Group::Capturing(node, quantity),
-        crate::lexer::OpenGroup::NonCapturing => Group::NonCapturing(node, quantity),
-        crate::lexer::OpenGroup::PositiveLookAhead => Group::PositiveLookAhead(node, quantity),
-        crate::lexer::OpenGroup::PositiveLookBehind => Group::PositiveLookBehind(node, quantity),
-        crate::lexer::OpenGroup::NegativeLookAhead => Group::NegativeLookAhead(node, quantity),
-        crate::lexer::OpenGroup::NegativeLookBehind => Group::NegativeLookBehind(node, quantity),
+        crate::lexer::OpenGroup::Capturing => Group::Capturing(node, quantity, pos),
+        crate::lexer::OpenGroup::NonCapturing => Group::NonCapturing(node, quantity, pos),
+        crate::lexer::OpenGroup::PositiveLookAhead => Group::PositiveLookAhead(node, quantity, pos),
+        crate::lexer::OpenGroup::PositiveLookBehind => {
+            Group::PositiveLookBehind(node, quantity, pos)
+        }
+        crate::lexer::OpenGroup::NegativeLookAhead => Group::NegativeLookAhead(node, quantity, pos),
+        crate::lexer::OpenGroup::NegativeLookBehind => {
+            Group::NegativeLookBehind(node, quantity, pos)
+        }
     }
 }
 
@@ -45,10 +54,11 @@ fn convert_bracket(
     bracket: crate::lexer::OpenBracket,
     nodes: Vec<Node>,
     quantity: Quantity,
+    pos: Pos,
 ) -> Multiple {
     match bracket {
-        crate::lexer::OpenBracket::Negated => Multiple::NOR(nodes, quantity),
-        crate::lexer::OpenBracket::NonNegated => Multiple::OR(nodes, quantity),
+        crate::lexer::OpenBracket::Negated => Multiple::NOR(nodes, quantity, pos),
+        crate::lexer::OpenBracket::NonNegated => Multiple::OR(nodes, quantity, pos),
     }
 }
 
@@ -68,61 +78,65 @@ impl Parser {
             match self.parse_node() {
                 Opsult::Some(node) => nodes.push(node),
                 Opsult::Err(err) => return Opsult::Err(err),
-                Opsult::None => break
+                Opsult::None => break,
             }
         }
 
         match nodes.len() {
             0 => Opsult::None,
             1 => Opsult::Some(nodes.first().unwrap().to_owned()),
-            _ => Opsult::Some(Node::Multiple(Multiple::AND(nodes)))
+            _ => Opsult::Some(Node::Multiple(Multiple::AND(nodes))),
         }
     }
 
     fn parse_node(&mut self) -> Opsult<Node, String> {
         if let Some(token) = self.tokens.first() {
             Opsult::Some(match token.to_owned() {
-                Token::Literal(char, _) => {
+                Token::Literal(char, pos) => {
                     self.tokens.remove(0);
-                    if let Some(Token::Quantity(quantity, _)) = self.tokens.first() {
-                        let quantity = convert_quantity(quantity);
+                    if let Some(Token::Quantity(quantity, _pos)) = self.tokens.first() {
+                        let quantity = convert_quantity(quantity, *_pos);
                         self.tokens.remove(0);
-                        Node::Single(Single::Char(char, quantity))
+                        Node::Single(Single::Char(char, quantity, pos))
                     } else {
-                        Node::Single(Single::Char(char, Quantity::One))
+                        Node::Single(Single::Char(char, Quantity::One, pos))
                     }
                 }
-                Token::Special(special, _) => {
+                Token::Special(special, pos) => {
                     self.tokens.remove(0);
-                    if let Some(Token::Quantity(quantity, _)) = self.tokens.first() {
-                        let quantity = convert_quantity(quantity);
+                    if let Some(Token::Quantity(quantity, _pos)) = self.tokens.first() {
+                        let quantity = convert_quantity(quantity, *_pos);
                         self.tokens.remove(0);
-                        Node::Single(Single::Special(convert_special(special), quantity))
+                        Node::Single(Single::Special(convert_special(special), quantity, pos))
                     } else {
-                        Node::Single(Single::Special(convert_special(special), Quantity::One))
+                        Node::Single(Single::Special(
+                            convert_special(special),
+                            Quantity::One,
+                            pos,
+                        ))
                     }
                 }
-                Token::AnchorStart(_) => {
+                Token::AnchorStart(pos) => {
                     self.tokens.remove(0);
-                    if let Some(Token::Quantity(quantity, _)) = self.tokens.first() {
-                        let quantity = convert_quantity(quantity);
+                    if let Some(Token::Quantity(quantity, _pos)) = self.tokens.first() {
+                        let quantity = convert_quantity(quantity, *_pos);
                         self.tokens.remove(0);
-                        Node::Single(Single::AnchorStart(quantity))
+                        Node::Single(Single::AnchorStart(quantity, pos))
                     } else {
-                        Node::Single(Single::AnchorStart(Quantity::One))
+                        Node::Single(Single::AnchorStart(Quantity::One, pos))
                     }
                 }
-                Token::AnchorEnd(_) => {
+                Token::AnchorEnd(pos) => {
                     self.tokens.remove(0);
-                    if let Some(Token::Quantity(quantity, _)) = self.tokens.first() {
-                        let quantity = convert_quantity(quantity);
+                    if let Some(Token::Quantity(quantity, _pos)) = self.tokens.first() {
+                        let quantity = convert_quantity(quantity, *_pos);
                         self.tokens.remove(0);
-                        Node::Single(Single::AnchorEnd(quantity))
+                        Node::Single(Single::AnchorEnd(quantity, pos))
                     } else {
-                        Node::Single(Single::AnchorEnd(Quantity::One))
+                        Node::Single(Single::AnchorEnd(Quantity::One, pos))
                     }
                 }
-                Token::OpenGroup(opengroup, _) => {
+                Token::OpenGroup(opengroup, pos) => {
                     self.tokens.remove(0);
                     let mut closed = false;
                     let mut nodes = Vec::new();
@@ -148,19 +162,20 @@ impl Parser {
                             match nodes.len() {
                                 0 => Node::Empty,
                                 1 => nodes.first().unwrap().to_owned(),
-                                _ => Node::Multiple(Multiple::AND(nodes))
+                                _ => Node::Multiple(Multiple::AND(nodes)),
                             },
-                            if let Some(Token::Quantity(quantity, _)) = self.tokens.first() {
-                                let quantity = convert_quantity(quantity);
+                            if let Some(Token::Quantity(quantity, _pos)) = self.tokens.first() {
+                                let quantity = convert_quantity(quantity, *_pos);
                                 self.tokens.remove(0);
                                 quantity
                             } else {
                                 Quantity::One
                             },
+                            pos,
                         )))
                     }
                 }
-                Token::OpenBracket(openbracket, _) => {
+                Token::OpenBracket(openbracket, pos) => {
                     self.tokens.remove(0);
                     let mut closed = false;
                     let mut nodes = Vec::new();
@@ -184,13 +199,14 @@ impl Parser {
                         Node::Multiple(convert_bracket(
                             openbracket,
                             nodes,
-                            if let Some(Token::Quantity(quantity, _)) = self.tokens.first() {
-                                let quantity = convert_quantity(quantity);
+                            if let Some(Token::Quantity(quantity, _pos)) = self.tokens.first() {
+                                let quantity = convert_quantity(quantity, *_pos);
                                 self.tokens.remove(0);
                                 quantity
                             } else {
                                 Quantity::One
                             },
+                            pos,
                         ))
                     }
                 }
