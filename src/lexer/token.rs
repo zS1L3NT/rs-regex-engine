@@ -8,9 +8,9 @@ pub enum Token {
     AnchorStart(Pos),
     AnchorEnd(Pos),
     OpenGroup(OpenGroup, Pos),
-    CloseGroup(Pos),
+    CloseGroup,
     OpenBracket(OpenBracket, Pos),
-    CloseBracket(Pos),
+    CloseBracket,
 }
 
 #[derive(Debug, Clone, PartialEq)]
