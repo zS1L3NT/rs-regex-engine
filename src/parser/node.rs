@@ -11,6 +11,7 @@ pub enum Node {
 #[derive(Debug, Clone, PartialEq)]
 pub enum Single {
     Char(char, Quantity),
+    Special(Special, Quantity),
     Whitespace(Quantity),
     NonWhitespace(Quantity),
     Word(Quantity),
@@ -51,4 +52,19 @@ pub enum Quantity {
     ZeroOrOne,
     Count(usize),
     Range(usize, Option<usize>),
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum Special {
+    Whitespace,
+    NonWhitespace,
+    Word,
+    NonWord,
+    Digit,
+    NonDigit,
+    Boundary,
+    NonBoundary,
+    LineBreak,
+    CarriageReturn,
+    Tab,
 }

@@ -1,3 +1,4 @@
+#[derive(Debug)]
 pub enum Opsult<T, E> {
     Some(T),
     Err(E),
