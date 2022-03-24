@@ -1,6 +1,7 @@
 mod error;
 mod lexer;
 mod opsult;
+mod parser;
 mod regex;
 mod traits;
 

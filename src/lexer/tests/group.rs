@@ -1,115 +1,115 @@
 mod invalid {
     use super::super::*;
-    use crate::invalid;
+    use crate::lex_invalid;
 
     #[test]
     fn start() {
-        invalid!("/(/", "Incomplete group structure");
+        lex_invalid!("/(/", "Incomplete group structure");
     }
 
     #[test]
     fn end() {
-        invalid!("/)/", "Unmatched parenthesis");
+        lex_invalid!("/)/", "Unmatched parenthesis");
     }
 
     #[test]
     fn start_with_question_mark() {
-        invalid!("/(?/", "Incomplete group structure");
+        lex_invalid!("/(?/", "Incomplete group structure");
     }
 }
 
 mod capturing {
     use super::super::*;
-    use crate::valid;
+    use crate::lex_valid;
 
     #[test]
     fn empty() {
-        valid!("/()/", vec![OpenGroup(Capturing, 0), CloseGroup(1)]);
+        lex_valid!("/()/", vec![OpenGroup(Capturing, 1), CloseGroup]);
     }
 
     #[test]
     fn with_literal() {
-        valid!(
+        lex_valid!(
             "/(a)/",
-            vec![OpenGroup(Capturing, 0), Literal('a', 1), CloseGroup(2)]
+            vec![OpenGroup(Capturing, 1), Literal('a', 2), CloseGroup]
         );
     }
 }
 
 mod non_capturing {
     use super::super::*;
-    use crate::{invalid, valid};
+    use crate::{lex_invalid, lex_valid};
 
     #[test]
     fn invalid() {
-        invalid!("/(?:/", "Incomplete group structure");
+        lex_invalid!("/(?:/", "Incomplete group structure");
     }
 
     #[test]
     fn empty() {
-        valid!("/(?:)/", vec![OpenGroup(NonCapturing, 0), CloseGroup(3)]);
+        lex_valid!("/(?:)/", vec![OpenGroup(NonCapturing, 1), CloseGroup]);
     }
 
     #[test]
     fn as_literals() {
-        valid!(
+        lex_valid!(
             "/(:?)/",
             vec![
-                OpenGroup(Capturing, 0),
-                Literal(':', 1),
-                Quantifier(ZeroOrOne, 2),
-                CloseGroup(3)
+                OpenGroup(Capturing, 1),
+                Literal(':', 2),
+                Quantity(ZeroOrOne, 3),
+                CloseGroup
             ]
         );
     }
 
     #[test]
     fn with_literal() {
-        valid!(
+        lex_valid!(
             "/(?:x)/",
-            vec![OpenGroup(NonCapturing, 0), Literal('x', 3), CloseGroup(4)]
+            vec![OpenGroup(NonCapturing, 1), Literal('x', 4), CloseGroup]
         );
     }
 }
 
 mod positive_lookahead {
     use super::super::*;
-    use crate::{invalid, valid};
+    use crate::{lex_invalid, lex_valid};
 
     #[test]
     fn invalid() {
-        invalid!("/(?=/", "Incomplete group structure");
+        lex_invalid!("/(?=/", "Incomplete group structure");
     }
 
     #[test]
     fn empty() {
-        valid!(
+        lex_valid!(
             "/(?=)/",
-            vec![OpenGroup(PositiveLookAhead, 0), CloseGroup(3)]
+            vec![OpenGroup(PositiveLookAhead, 1), CloseGroup]
         );
     }
 
     #[test]
     fn as_literals() {
-        valid!(
+        lex_valid!(
             "/(=?)/",
             vec![
-                OpenGroup(Capturing, 0),
-                Literal('=', 1),
-                Quantifier(ZeroOrOne, 2),
-                CloseGroup(3)
+                OpenGroup(Capturing, 1),
+                Literal('=', 2),
+                Quantity(ZeroOrOne, 3),
+                CloseGroup
             ]
         );
     }
 
     #[test]
     fn with_literal() {
-        valid!(
+        lex_valid!(
             "/(?=x)/",
             vec![
-                OpenGroup(PositiveLookAhead, 0),
-                Literal('x', 3),
-                CloseGroup(4)
+                OpenGroup(PositiveLookAhead, 1),
+                Literal('x', 4),
+                CloseGroup
             ]
         );
     }
@@ -117,43 +117,43 @@ mod positive_lookahead {
 
 mod positive_lookbehind {
     use super::super::*;
-    use crate::{invalid, valid};
+    use crate::{lex_invalid, lex_valid};
 
     #[test]
     fn invalid() {
-        invalid!("/(?</", "Incomplete group structure");
-        invalid!("/(?<=/", "Incomplete group structure");
+        lex_invalid!("/(?</", "Incomplete group structure");
+        lex_invalid!("/(?<=/", "Incomplete group structure");
     }
 
     #[test]
     fn empty() {
-        valid!(
+        lex_valid!(
             "/(?<=)/",
-            vec![OpenGroup(PositiveLookBehind, 0), CloseGroup(4)]
+            vec![OpenGroup(PositiveLookBehind, 1), CloseGroup]
         );
     }
 
     #[test]
     fn with_literal() {
-        valid!(
+        lex_valid!(
             "/(?<=x)/",
             vec![
-                OpenGroup(PositiveLookBehind, 0),
-                Literal('x', 4),
-                CloseGroup(5)
+                OpenGroup(PositiveLookBehind, 1),
+                Literal('x', 5),
+                CloseGroup
             ]
         );
     }
 
     #[test]
     fn as_literals() {
-        valid!(
+        lex_valid!(
             "/(?=<x)/",
             vec![
-                OpenGroup(PositiveLookAhead, 0),
-                Literal('<', 3),
-                Literal('x', 4),
-                CloseGroup(5)
+                OpenGroup(PositiveLookAhead, 1),
+                Literal('<', 4),
+                Literal('x', 5),
+                CloseGroup
             ]
         );
     }
@@ -161,42 +161,42 @@ mod positive_lookbehind {
 
 mod negative_lookahead {
     use super::super::*;
-    use crate::{invalid, valid};
+    use crate::{lex_invalid, lex_valid};
 
     #[test]
     fn invalid() {
-        invalid!("/(?!/", "Incomplete group structure");
+        lex_invalid!("/(?!/", "Incomplete group structure");
     }
 
     #[test]
     fn empty() {
-        valid!(
+        lex_valid!(
             "/(?!)/",
-            vec![OpenGroup(NegativeLookAhead, 0), CloseGroup(3)]
+            vec![OpenGroup(NegativeLookAhead, 1), CloseGroup]
         );
     }
 
     #[test]
     fn as_literals() {
-        valid!(
+        lex_valid!(
             "/(!?)/",
             vec![
-                OpenGroup(Capturing, 0),
-                Literal('!', 1),
-                Quantifier(ZeroOrOne, 2),
-                CloseGroup(3)
+                OpenGroup(Capturing, 1),
+                Literal('!', 2),
+                Quantity(ZeroOrOne, 3),
+                CloseGroup
             ]
         );
     }
 
     #[test]
     fn with_literal() {
-        valid!(
+        lex_valid!(
             "/(?!x)/",
             vec![
-                OpenGroup(NegativeLookAhead, 0),
-                Literal('x', 3),
-                CloseGroup(4)
+                OpenGroup(NegativeLookAhead, 1),
+                Literal('x', 4),
+                CloseGroup
             ]
         );
     }
@@ -204,42 +204,42 @@ mod negative_lookahead {
 
 mod negative_lookbehind {
     use super::super::*;
-    use crate::{invalid, valid};
+    use crate::{lex_invalid, lex_valid};
 
     #[test]
     fn invalid() {
-        invalid!("/(?</", "Incomplete group structure");
-        invalid!("/(?<!/", "Incomplete group structure");
+        lex_invalid!("/(?</", "Incomplete group structure");
+        lex_invalid!("/(?<!/", "Incomplete group structure");
     }
 
     #[test]
     fn empty() {
-        valid!(
+        lex_valid!(
             "/(?<!)/",
-            vec![OpenGroup(NegativeLookBehind, 0), CloseGroup(4)]
+            vec![OpenGroup(NegativeLookBehind, 1), CloseGroup]
         );
     }
 
     #[test]
     fn with_literal() {
-        valid!(
+        lex_valid!(
             "/(?<!x)/",
             vec![
-                OpenGroup(NegativeLookBehind, 0),
-                Literal('x', 4),
-                CloseGroup(5)
+                OpenGroup(NegativeLookBehind, 1),
+                Literal('x', 5),
+                CloseGroup
             ]
         );
     }
     #[test]
     fn as_literals() {
-        valid!(
+        lex_valid!(
             "/(?!<x)/",
             vec![
-                OpenGroup(NegativeLookAhead, 0),
-                Literal('<', 3),
-                Literal('x', 4),
-                CloseGroup(5)
+                OpenGroup(NegativeLookAhead, 1),
+                Literal('<', 4),
+                Literal('x', 5),
+                CloseGroup
             ]
         );
     }

@@ -1,4 +1,4 @@
-use super::{super::Error, OpenBracket, OpenGroup, Pos, Quantifier, Special, Token};
+use super::{super::Error, OpenBracket, OpenGroup, Pos, Quantity, Special, Token};
 
 pub struct Lexer {
     chars: Vec<char>,
@@ -14,7 +14,7 @@ impl Lexer {
         Self {
             chars: string.chars().collect(),
             tokens: vec![],
-            pos: 0,
+            pos: 1,
 
             bracket_depth: 0,
             group_depth: 0,
@@ -139,7 +139,7 @@ impl Lexer {
                     self.tokens.push(Token::Literal(']', self.pos));
                 } else {
                     self.bracket_depth -= 1;
-                    self.tokens.push(Token::CloseBracket(self.pos));
+                    self.tokens.push(Token::CloseBracket);
                 }
                 self.chars.remove(0);
                 self.pos += 1;
@@ -244,7 +244,7 @@ impl Lexer {
                     return Err(Error::new("Unmatched parenthesis".to_string(), self.pos));
                 }
                 self.group_depth -= 1;
-                self.tokens.push(Token::CloseGroup(self.pos));
+                self.tokens.push(Token::CloseGroup);
                 self.chars.remove(0);
                 self.pos += 1;
                 Ok(true)
@@ -257,21 +257,21 @@ impl Lexer {
         match self.chars.first() {
             Some('+') => {
                 self.tokens
-                    .push(Token::Quantifier(Quantifier::OneOrMore, self.pos));
+                    .push(Token::Quantity(Quantity::OneOrMore, self.pos));
                 self.chars.remove(0);
                 self.pos += 1;
                 true
             }
             Some('*') => {
                 self.tokens
-                    .push(Token::Quantifier(Quantifier::ZeroOrMore, self.pos));
+                    .push(Token::Quantity(Quantity::ZeroOrMore, self.pos));
                 self.chars.remove(0);
                 self.pos += 1;
                 true
             }
             Some('?') => {
                 self.tokens
-                    .push(Token::Quantifier(Quantifier::ZeroOrOne, self.pos));
+                    .push(Token::Quantity(Quantity::ZeroOrOne, self.pos));
                 self.chars.remove(0);
                 self.pos += 1;
                 true
@@ -302,10 +302,10 @@ impl Lexer {
                             };
 
                             self.tokens
-                                .push(Token::Quantifier(Quantifier::Range(start, end), self.pos))
+                                .push(Token::Quantity(Quantity::Range(start, end), self.pos))
                         } else {
-                            self.tokens.push(Token::Quantifier(
-                                Quantifier::Count(data.parse().unwrap()),
+                            self.tokens.push(Token::Quantity(
+                                Quantity::Count(data.parse().unwrap()),
                                 self.pos,
                             ))
                         }

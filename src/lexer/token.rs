@@ -4,13 +4,13 @@ pub type Pos = usize;
 pub enum Token {
     Literal(char, Pos),
     Special(Special, Pos),
-    Quantifier(Quantifier, Pos),
+    Quantity(Quantity, Pos),
     AnchorStart(Pos),
     AnchorEnd(Pos),
     OpenGroup(OpenGroup, Pos),
-    CloseGroup(Pos),
+    CloseGroup,
     OpenBracket(OpenBracket, Pos),
-    CloseBracket(Pos),
+    CloseBracket,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -29,7 +29,7 @@ pub enum Special {
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub enum Quantifier {
+pub enum Quantity {
     OneOrMore,
     ZeroOrMore,
     ZeroOrOne,

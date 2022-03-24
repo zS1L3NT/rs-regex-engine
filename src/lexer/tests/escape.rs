@@ -1,77 +1,77 @@
 use super::*;
-use crate::{invalid, valid};
+use crate::{lex_invalid, lex_valid};
 
 #[test]
 fn period() {
-    valid!("/\\./", vec![Literal('.', 0)]);
+    lex_valid!("/\\./", vec![Literal('.', 1)]);
 }
 
 #[test]
 fn plus() {
-    valid!("/\\+/", vec![Literal('+', 0)]);
+    lex_valid!("/\\+/", vec![Literal('+', 1)]);
 }
 
 #[test]
 fn asterisk() {
-    valid!("/\\*/", vec![Literal('*', 0)]);
+    lex_valid!("/\\*/", vec![Literal('*', 1)]);
 }
 
 #[test]
 fn question_mark() {
-    valid!("/\\?/", vec![Literal('?', 0)]);
+    lex_valid!("/\\?/", vec![Literal('?', 1)]);
 }
 
 #[test]
 fn caret() {
-    valid!("/\\^/", vec![Literal('^', 0)]);
+    lex_valid!("/\\^/", vec![Literal('^', 1)]);
 }
 
 #[test]
 fn dollar_sign() {
-    valid!("/\\$/", vec![Literal('$', 0)]);
+    lex_valid!("/\\$/", vec![Literal('$', 1)]);
 }
 
 #[test]
 fn open_group() {
-    valid!("/\\(/", vec![Literal('(', 0)]);
+    lex_valid!("/\\(/", vec![Literal('(', 1)]);
 }
 
 #[test]
 fn close_group() {
-    valid!("/\\)/", vec![Literal(')', 0)]);
+    lex_valid!("/\\)/", vec![Literal(')', 1)]);
 }
 
 #[test]
 fn open_bracket() {
-    valid!("/\\[/", vec![Literal('[', 0)]);
+    lex_valid!("/\\[/", vec![Literal('[', 1)]);
 }
 
 #[test]
 fn close_bracket() {
-    valid!("/\\]/", vec![Literal(']', 0)]);
+    lex_valid!("/\\]/", vec![Literal(']', 1)]);
 }
 
 #[test]
 fn open_range() {
-    valid!("/\\{/", vec![Literal('{', 0)]);
+    lex_valid!("/\\{/", vec![Literal('{', 1)]);
 }
 
 #[test]
 fn close_range() {
-    valid!("/\\}/", vec![Literal('}', 0)]);
+    lex_valid!("/\\}/", vec![Literal('}', 1)]);
 }
 
 #[test]
 fn pipe() {
-    valid!("/\\|/", vec![Literal('|', 0)]);
+    lex_valid!("/\\|/", vec![Literal('|', 1)]);
 }
 
 #[test]
 fn backslash() {
-    valid!("/\\\\/", vec![Literal('\\', 0)]);
+    lex_valid!("/\\\\/", vec![Literal('\\', 1)]);
 }
 
 #[test]
 fn invalid() {
-    invalid!("/\\/", "Pattern may not end with a trailing backslash");
+    lex_invalid!("/\\/", "Pattern may not end with a trailing backslash");
 }
