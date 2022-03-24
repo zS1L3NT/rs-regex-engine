@@ -2,6 +2,7 @@ use std::fmt::Debug;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Node {
+    Empty,
     Single(Single),
     Multiple(Multiple),
     Group(Box<Group>),
@@ -9,41 +10,42 @@ pub enum Node {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Single {
-    Char(char, Option<Quantity>),
-    Whitespace(Option<Quantity>),
-    NonWhitespace(Option<Quantity>),
-    Word(Option<Quantity>),
-    NonWord(Option<Quantity>),
-    Digit(Option<Quantity>),
-    NonDigit(Option<Quantity>),
-    Boundary(Option<Quantity>),
-    NonBoundary(Option<Quantity>),
-    LineBreak(Option<Quantity>),
-    CarriageReturn(Option<Quantity>),
-    Tab(Option<Quantity>),
-    AnchorStart(Option<Quantity>),
-    AnchorEnd(Option<Quantity>),
+    Char(char, Quantity),
+    Whitespace(Quantity),
+    NonWhitespace(Quantity),
+    Word(Quantity),
+    NonWord(Quantity),
+    Digit(Quantity),
+    NonDigit(Quantity),
+    Boundary(Quantity),
+    NonBoundary(Quantity),
+    LineBreak(Quantity),
+    CarriageReturn(Quantity),
+    Tab(Quantity),
+    AnchorStart(Quantity),
+    AnchorEnd(Quantity),
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Multiple {
-    AND(Vec<Node>, Option<Quantity>),
-    OR(Vec<Node>, Option<Quantity>),
-    NOR(Vec<Node>, Option<Quantity>),
+    AND(Vec<Node>),
+    OR(Vec<Node>, Quantity),
+    NOR(Vec<Node>, Quantity),
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Group {
-    Capturing(Node, Option<Quantity>),
-    NonCapturing(Node, Option<Quantity>),
-    PositiveLookAhead(Node, Option<Quantity>),
-    PositiveLookBehind(Node, Option<Quantity>),
-    NegativeLookAhead(Node, Option<Quantity>),
-    NegativeLookBehind(Node, Option<Quantity>),
+    Capturing(Node, Quantity),
+    NonCapturing(Node, Quantity),
+    PositiveLookAhead(Node, Quantity),
+    PositiveLookBehind(Node, Quantity),
+    NegativeLookAhead(Node, Quantity),
+    NegativeLookBehind(Node, Quantity),
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Quantity {
+    One,
     OneOrMore,
     ZeroOrMore,
     ZeroOrOne,
