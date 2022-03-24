@@ -47,13 +47,13 @@ mod non_capturing {
 
     #[test]
     fn empty() {
-        parse_valid!("/(^)/", Group(Box::new(NonCapturing(Empty, One))));
+        parse_valid!("/(?:)/", Group(Box::new(NonCapturing(Empty, One))));
     }
 
     #[test]
     fn with_literal() {
         parse_valid!(
-            "/(^a)/",
+            "/(?:a)/",
             Group(Box::new(NonCapturing(Single(Char('a', One)), One)))
         );
     }
@@ -61,7 +61,7 @@ mod non_capturing {
     #[test]
     fn with_literal_quantified() {
         parse_valid!(
-            "/(^a+)?/",
+            "/(?:a+)?/",
             Group(Box::new(NonCapturing(
                 Single(Char('a', OneOrMore)),
                 ZeroOrOne
@@ -72,7 +72,7 @@ mod non_capturing {
     #[test]
     fn with_brackets() {
         parse_valid!(
-            "/(^a[bc])/",
+            "/(?:a[bc])/",
             Group(Box::new(NonCapturing(
                 Multiple(AND(vec![
                     Single(Char('a', One)),
