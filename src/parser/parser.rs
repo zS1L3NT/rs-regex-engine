@@ -142,7 +142,7 @@ impl Parser {
                     let mut nodes = Vec::new();
                     while let Some(token) = self.tokens.first() {
                         let token = token.to_owned();
-                        if let Token::CloseGroup(_) = token {
+                        if let Token::CloseGroup = token {
                             self.tokens.remove(0);
                             closed = true;
                             break;
@@ -181,7 +181,7 @@ impl Parser {
                     let mut nodes = Vec::new();
                     while let Some(token) = self.tokens.first() {
                         let token = token.to_owned();
-                        if let Token::CloseBracket(_) = token {
+                        if let Token::CloseBracket = token {
                             self.tokens.remove(0);
                             closed = true;
                             break;
