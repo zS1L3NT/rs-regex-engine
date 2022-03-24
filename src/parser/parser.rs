@@ -17,19 +17,19 @@ fn convert_quantity(quantity: &crate::lexer::Quantity, pos: Pos) -> Quantity {
     }
 }
 
-fn convert_special(special: crate::lexer::Special) -> Special {
+fn convert_special(special: crate::lexer::Special, quantity: Quantity, pos: Pos) -> Single {
     match special {
-        crate::lexer::Special::Whitespace => Special::Whitespace,
-        crate::lexer::Special::NonWhitespace => Special::NonWhitespace,
-        crate::lexer::Special::Word => Special::Word,
-        crate::lexer::Special::NonWord => Special::NonWord,
-        crate::lexer::Special::Digit => Special::Digit,
-        crate::lexer::Special::NonDigit => Special::NonDigit,
-        crate::lexer::Special::Boundary => Special::Boundary,
-        crate::lexer::Special::NonBoundary => Special::NonBoundary,
-        crate::lexer::Special::LineBreak => Special::LineBreak,
-        crate::lexer::Special::CarriageReturn => Special::CarriageReturn,
-        crate::lexer::Special::Tab => Special::Tab,
+        crate::lexer::Special::Whitespace => Single::Whitespace(quantity, pos),
+        crate::lexer::Special::NonWhitespace => Single::NonWhitespace(quantity, pos),
+        crate::lexer::Special::Word => Single::Word(quantity, pos),
+        crate::lexer::Special::NonWord => Single::NonWord(quantity, pos),
+        crate::lexer::Special::Digit => Single::Digit(quantity, pos),
+        crate::lexer::Special::NonDigit => Single::NonDigit(quantity, pos),
+        crate::lexer::Special::Boundary => Single::Boundary(quantity, pos),
+        crate::lexer::Special::NonBoundary => Single::NonBoundary(quantity, pos),
+        crate::lexer::Special::LineBreak => Single::LineBreak(quantity, pos),
+        crate::lexer::Special::CarriageReturn => Single::CarriageReturn(quantity, pos),
+        crate::lexer::Special::Tab => Single::Tab(quantity, pos),
     }
 }
 
@@ -110,13 +110,9 @@ impl Parser {
                     if let Some(Token::Quantity(quantity, _pos)) = self.tokens.first() {
                         let quantity = convert_quantity(quantity, *_pos);
                         self.tokens.remove(0);
-                        Node::Single(Single::Special(convert_special(special), quantity, pos))
+                        Node::Single(convert_special(special, quantity, pos))
                     } else {
-                        Node::Single(Single::Special(
-                            convert_special(special),
-                            Quantity::One,
-                            pos,
-                        ))
+                        Node::Single(convert_special(special, Quantity::One, pos))
                     }
                 }
                 Token::AnchorStart(pos) => {
