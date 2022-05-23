@@ -1,11 +1,12 @@
 use super::{
+    evaluator::Evaluator,
     lexer::Lexer,
     parser::{Node, Parser},
     Error,
 };
 
 pub struct RegExp {
-    node: Node,
+    pub node: Node,
 }
 
 impl RegExp {
@@ -13,8 +14,8 @@ impl RegExp {
         Self { node }
     }
 
-    pub fn matches_string(&self, string: &str) {
-        println!("{}", string);
+    pub fn matches_string(&self, string: &str) -> Option<Vec<String>> {
+        Evaluator::new(self.node.clone(), string).evaluate()
     }
 }
 

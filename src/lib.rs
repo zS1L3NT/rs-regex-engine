@@ -1,4 +1,5 @@
 mod error;
+mod evaluator;
 mod lexer;
 mod opsult;
 mod parser;
